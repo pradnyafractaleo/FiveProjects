@@ -27,6 +27,9 @@ export async function fetchCategory(cat) {
 
 // Settings: this device's saved copy wins, else the published config.json
 export async function loadConfig() {
-  try { const local = localStorage.getItem("nuggetConfig"); if (local) return JSON.parse(local); } catch {}
+  try {
+    const local = JSON.parse(localStorage.getItem("nuggetConfig"));
+    if (local && !(local.localUntil && Date.now() > local.localUntil)) return local;
+  } catch {}
   return (await fetch("config.json?" + Date.now())).json();
 }

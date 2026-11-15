@@ -3,6 +3,7 @@ import { loadConfig } from "./sources.js";
 import { ART_STYLES, makeArt } from "./art.js";
 
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, "0")).join("");
+const REPO = "pradnyafractaleo/FiveProjects", BRANCH = "main";
 const ls = { get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
 function CategoryEditor({ c, i, total, update, move, remove }) {
@@ -31,7 +32,7 @@ function CategoryEditor({ c, i, total, update, move, remove }) {
 
 export default function Admin() {
   const [cfg, setCfg] = useState(null), [pass, setPass] = useState(""), [err, setErr] = useState(""), [status, setStatus] = useState("");
-  const [gh, setGh] = useState({ repo: ls.get("ghRepo") || "pradnyafractaleo/FiveProjects", branch: ls.get("ghBranch") || "main", token: ls.get("ghToken"), newPass: "" });
+  const [token, setToken] = useState(ls.get("ghToken")), [newPass, setNewPass] = useState(""), [setupOpen, setSetupOpen] = useState(false);
 
   const unlock = async e => {
     e.preventDefault();
@@ -41,21 +42,27 @@ export default function Admin() {
   };
   const setCats = f => setCfg(c => ({ ...c, categories: f([...c.categories]) }));
 
-  const publish = async () => {
-    const out = { ...cfg, ...(gh.newPass ? { passcodeHash: await sha(gh.newPass) } : {}) };
-    ls.set("ghRepo", gh.repo); ls.set("ghBranch", gh.branch); ls.set("ghToken", gh.token);
-    const api = `https://api.github.com/repos/${gh.repo}/contents/discover/config.json`;
-    const h = { Authorization: `Bearer ${gh.token}`, Accept: "application/vnd.github+json" };
-    setStatus("Publishing…");
+  // One Save: shows the change on this device right away, and publishes it to all devices when the one-time setup is done
+  const save = async () => {
+    const out = { ...cfg, ...(newPass ? { passcodeHash: await sha(newPass) } : {}) };
+    if (!token) {
+      ls.set("nuggetConfig", JSON.stringify(out));
+      setSetupOpen(true);
+      return setStatus("Saved on this device. To update all your devices, finish the one-time setup below.");
+    }
+    ls.set("ghToken", token);
+    const api = `https://api.github.com/repos/${REPO}/contents/discover/config.json`;
+    const h = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
+    setStatus("Saving…");
     try {
-      const cur = await fetch(`${api}?ref=${gh.branch}`, { headers: h }).then(r => r.ok ? r.json() : {});
-      const body = JSON.stringify(out, null, 2);
-      const r = await fetch(api, { method: "PUT", headers: h, body: JSON.stringify({ message: "Update feed categories", branch: gh.branch, sha: cur.sha,
-        content: btoa(String.fromCharCode(...new TextEncoder().encode(body))) }) });
+      const cur = await fetch(`${api}?ref=${BRANCH}`, { headers: h }).then(r => r.ok ? r.json() : {});
+      const r = await fetch(api, { method: "PUT", headers: h, body: JSON.stringify({ message: "Update NuggetBox settings", branch: BRANCH, sha: cur.sha,
+        content: btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(out, null, 2)))) }) });
       if (!r.ok) throw new Error((await r.json()).message);
-      try { localStorage.removeItem("nuggetConfig"); } catch {}
-      setCfg(out); setStatus("Published 🎉 All devices update in about a minute.");
-    } catch (x) { setStatus("Publish failed: " + x.message); }
+      // Show it here at once; the published copy takes over after the site updates (about a minute)
+      ls.set("nuggetConfig", JSON.stringify({ ...out, localUntil: Date.now() + 5 * 60 * 1000 }));
+      setCfg(out); setNewPass(""); setStatus("Saved ✅ All your devices will show it in about a minute.");
+    } catch (x) { setSetupOpen(true); setStatus("Saved on this device, but couldn't update other devices: " + x.message); ls.set("nuggetConfig", JSON.stringify(out)); }
   };
 
   return (
@@ -82,15 +89,16 @@ export default function Admin() {
           ))}
           <div className="actions">
             <button className="btn alt" onClick={() => setCats(L => [...L, { name: "New category", query: "", style: "surprise" }])}>➕ Add category</button>
-            <button className="btn" onClick={() => { ls.set("nuggetConfig", JSON.stringify(cfg)); setStatus("Saved on this device ✅"); }}>💾 Save on this device</button>
+            <button className="btn" onClick={save}>💾 Save</button>
           </div>
-          <h2>Sync to all devices</h2>
-          <p className="note">Publishing writes config.json to GitHub so your PC, Mac and iPhone all see the same categories. Needs a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained GitHub token</a> with "Contents: read and write" on this repo only. It is stored only in this browser.</p>
-          {[["repo", "owner/repo", "text"], ["branch", "branch e.g. main", "text"], ["token", "GitHub token", "password"], ["newPass", "New passcode (optional)", "text"]].map(([k, ph, t]) => (
-            <input key={k} type={t} placeholder={ph} value={gh[k]} onChange={e => setGh({ ...gh, [k]: e.target.value })} style={{ marginTop: 8 }} />
-          ))}
-          <div className="actions" style={{ marginTop: 8 }}><button className="btn danger" onClick={publish}>🚀 Publish to all devices</button></div>
           <p className="note">{status}</p>
+          <details className="setup" open={setupOpen} onToggle={e => setSetupOpen(e.target.open)}>
+            <summary>One-time setup{token ? " ✓" : ""}</summary>
+            <p className="note">So Save updates your phone and computers together, paste a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub token</a> once on each device (give it "Contents: read and write" on the FiveProjects repo only). It stays on this device.</p>
+            <input type="password" placeholder="GitHub token" value={token} onChange={e => { setToken(e.target.value); ls.set("ghToken", e.target.value); }} />
+            <p className="note">Change admin passcode (optional, applies on Save)</p>
+            <input type="text" placeholder="New passcode" value={newPass} onChange={e => setNewPass(e.target.value)} />
+          </details>
         </div>
       )}
     </>

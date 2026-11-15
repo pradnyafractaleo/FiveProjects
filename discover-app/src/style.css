@@ -66,3 +66,5 @@ dialog .btn{padding:8px 14px}
 .cat label{font-size:13px;color:var(--muted)}
 .note{color:var(--muted);font-size:14px}
 .note a{color:var(--purple)}
+.setup{margin-top:20px;background:var(--card);border-radius:14px;padding:10px 14px}
+.setup summary{cursor:pointer;font-weight:700;color:var(--muted)}
