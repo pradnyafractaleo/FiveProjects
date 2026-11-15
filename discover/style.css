@@ -36,3 +36,7 @@ dialog p{line-height:1.55;color:var(--muted);white-space:pre-line;max-height:40v
 .cat label{font-size:13px;color:var(--muted)} .full{grid-column:1/-1}
 .checks{display:flex;gap:12px;flex-wrap:wrap}
 .note{color:var(--muted);font-size:14px}
+.thumb{position:relative;overflow:hidden}.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb img:not(:only-child){position:absolute;inset:0;opacity:0}
+.note a{color:var(--pop4)}
+.panel h2{margin-top:24px}
