@@ -61,7 +61,7 @@ let cfg;
 })();
 searchForm.onsubmit = e => {
   e.preventDefault(); const q = document.getElementById("q").value.trim(); if (!q) return;
-  rows.innerHTML = ""; addRow({ name: `Results for “${q}”`, emoji: "🔎", query: q, tag: q, sources: ["wikipedia","hn","reddit","devto"] }, 0);
+  rows.innerHTML = ""; addRow({ name: `Results for “${q}”`, emoji: "🔎", query: q, tag: q, sources: ["wikipedia","hn","devto"] }, 0);
   cfg.categories.forEach((c, i) => addRow(c, i + 1));
 };
 </script>

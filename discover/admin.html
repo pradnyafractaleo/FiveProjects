@@ -39,8 +39,7 @@ function render() {
     d.innerHTML = `
       <div><label>Emoji</label><input type="text" data-k="emoji"></div>
       <div><label>Category name</label><input type="text" data-k="name"></div>
-      <div class="full"><label>Search words (used for Wikipedia, Hacker News, Reddit search)</label><input type="text" data-k="query"></div>
-      <div class="full"><label>Subreddit (optional, e.g. gardening)</label><input type="text" data-k="subreddit"></div>
+      <div class="full"><label>Search words (used for Wikipedia and Hacker News search)</label><input type="text" data-k="query"></div>
       <div class="full"><label>Dev.to tag (optional, e.g. productivity)</label><input type="text" data-k="tag"></div>
       <div class="full checks">${Object.entries(SOURCE_NAMES).map(([k,v]) => `<label><input type="checkbox" value="${k}" ${c.sources?.includes(k) ? "checked" : ""}> ${v}</label>`).join("")}</div>
       <div class="full actions"><button class="btn ghost" data-a="up">↑</button><button class="btn ghost" data-a="down">↓</button><button class="btn danger" data-a="del">Delete</button></div>`;
@@ -64,7 +63,7 @@ loginForm.onsubmit = async e => {
   repo.value = ls.get("ghRepo") || "pradnyafractaleo/fiveprojects"; branch.value = ls.get("ghBranch") || "main"; token.value = ls.get("ghToken");
   render();
 };
-add.onclick = () => { cfg.categories.push({ name: "New category", emoji: "✨", query: "", subreddit: "", tag: "", sources: ["wikipedia","reddit"] }); render(); };
+add.onclick = () => { cfg.categories.push({ name: "New category", emoji: "✨", query: "", tag: "", sources: ["wikipedia","hn"] }); render(); };
 save.onclick = () => { ls.set("nuggetConfig", JSON.stringify(cfg)); status.textContent = "Saved on this device ✅"; };
 publish.onclick = async () => {
   if (newPass.value) cfg.passcodeHash = await sha(newPass.value);

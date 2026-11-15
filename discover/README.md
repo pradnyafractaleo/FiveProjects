@@ -1,6 +1,6 @@
 # Nugget Feed
 
-A colorful feed of bite-size "nuggets" from free sources (Wikipedia, Reddit, Hacker News, Dev.to). No keys, no build step.
+A colorful feed of bite-size "nuggets" from free sources (Wikipedia, Hacker News, Dev.to). No keys, no build step.
 
 - `index.html`: main portal. One row of cards per category, plus search. Tap a card for a summary and a link to the source.
 - `admin.html`: passcode-protected admin. Add, edit, reorder or delete categories. Default passcode is `fractaleo` (change it from the admin page).

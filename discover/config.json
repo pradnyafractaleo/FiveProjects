@@ -2,8 +2,35 @@
   "title": "Nugget Feed",
   "passcodeHash": "f08b813699f3146a9daa9c585dffb7373955156453e37b0bbd7335477b8289b9",
   "categories": [
-    { "name": "Life", "emoji": "🌈", "query": "happiness habits", "subreddit": "LifeProTips", "tag": "productivity", "sources": ["wikipedia", "reddit", "devto"] },
-    { "name": "Gardening", "emoji": "🌻", "query": "gardening", "subreddit": "gardening", "tag": "", "sources": ["wikipedia", "reddit"] },
-    { "name": "Tech", "emoji": "🚀", "query": "technology", "subreddit": "technology", "tag": "webdev", "sources": ["hn", "devto", "reddit"] }
+    {
+      "name": "Life",
+      "emoji": "🌈",
+      "query": "happiness habits",
+      "tag": "productivity",
+      "sources": [
+        "wikipedia",
+        "devto"
+      ]
+    },
+    {
+      "name": "Gardening",
+      "emoji": "🌻",
+      "query": "gardening",
+      "tag": "",
+      "sources": [
+        "wikipedia",
+        "hn"
+      ]
+    },
+    {
+      "name": "Tech",
+      "emoji": "🚀",
+      "query": "technology",
+      "tag": "webdev",
+      "sources": [
+        "hn",
+        "devto"
+      ]
+    }
   ]
 }
