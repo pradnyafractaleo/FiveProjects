@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nugget Feed</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap">
+<link rel="stylesheet" href="style.css">
+</head><body>
+<header>
+  <h1 id="title">Nugget Feed</h1>
+  <form class="search" id="searchForm">
+    <input id="q" type="search" placeholder="Search anything… 🔍">
+    <button class="btn">Go</button>
+  </form>
+  <a class="btn ghost" href="admin.html">⚙️ Admin</a>
+</header>
+<main id="rows"></main>
+<dialog id="dlg"><div class="thumb" id="dImg"></div><div class="inner">
+  <h3 id="dTitle"></h3><p id="dSum"></p>
+  <div class="actions"><button class="btn ghost" onclick="dlg.close()">Close</button><a class="btn" id="dLink" target="_blank" rel="noopener">Visit site ↗</a></div>
+</div></dialog>
+<script src="sources.js"></script>
+<script>
+const COLORS = ["#ff6b9d","#ffb347","#4ecdc4","#7b6cff","#7bd389","#ff8a5c"];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const host = u => { try { return new URL(u).hostname.replace("www.",""); } catch { return ""; } };
+function thumb(el, n, emoji, i) {
+  if (n.image) { el.style.backgroundImage = `url("${n.image.replace(/"/g,"%22")}")`; el.textContent = ""; }
+  else { el.style.backgroundImage = `linear-gradient(135deg,${COLORS[i%6]},${COLORS[(i+2)%6]})`; el.textContent = emoji; }
+}
+function openNugget(n, emoji, i) {
+  thumb(dImg, n, emoji, i); dTitle.textContent = n.title;
+  dSum.textContent = n.summary || "No summary available — tap Visit site to read more.";
+  dLink.href = n.url; dlg.showModal();
+}
+async function addRow(c, idx) {
+  const sec = document.createElement("section"); sec.className = "row";
+  sec.innerHTML = `<h2>${esc(c.emoji)} ${esc(c.name)}</h2><div class="cards"><p class="empty">Finding nuggets…</p></div>`;
+  rows.appendChild(sec);
+  const box = sec.querySelector(".cards"), items = await fetchCategory(c);
+  box.innerHTML = items.length ? "" : `<p class="empty">Nothing found right now. Try other sources in Admin.</p>`;
+  items.forEach((n, i) => {
+    const card = document.createElement("div"); card.className = "card";
+    card.innerHTML = `<div class="thumb"></div><div class="body"><h3>${esc(n.title)}</h3>
+      <div class="src"><span class="pill">${esc(n.source)}</span><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(host(n.url))} ↗</a></div></div>`;
+    thumb(card.querySelector(".thumb"), n, c.emoji || "✨", i + idx);
+    card.querySelector("a").onclick = e => e.stopPropagation();
+    card.onclick = () => openNugget(n, c.emoji || "✨", i + idx);
+    box.appendChild(card);
+  });
+}
+let cfg;
+(async () => {
+  cfg = await loadConfig();
+  document.title = title.textContent = cfg.title || "Nugget Feed";
+  cfg.categories.forEach(addRow);
+})();
+searchForm.onsubmit = e => {
+  e.preventDefault(); const q = document.getElementById("q").value.trim(); if (!q) return;
+  rows.innerHTML = ""; addRow({ name: `Results for “${q}”`, emoji: "🔎", query: q, tag: q, sources: ["wikipedia","hn","reddit","devto"] }, 0);
+  cfg.categories.forEach((c, i) => addRow(c, i + 1));
+};
+</script>
+</body></html>
