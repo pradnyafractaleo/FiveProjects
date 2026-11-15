@@ -1,7 +1,7 @@
 :root{--bg:#fff8f0;--ink:#2b2140;--muted:#6b6180;--card:#ffffff;--line:#f0e4d8;--pop1:#ff6b9d;--pop2:#ffb347;--pop3:#4ecdc4;--pop4:#7b6cff;--title:#1f9e89}
 @media (prefers-color-scheme:dark){:root{--bg:#1b1726;--ink:#f6f0ff;--muted:#b3a9c9;--card:#262036;--line:#383050;--title:#5fd3bf}}
 *{box-sizing:border-box}
-body{margin:0;overscroll-behavior-y:contain;background:var(--bg);color:var(--ink);font-family:"Patrick Hand",system-ui,sans-serif;font-size:18px}
+body{margin:0;overscroll-behavior-y:contain;background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,sans-serif;font-size:16px}
 header{padding:20px 16px 8px;max-width:1200px;margin:auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
 h1{margin:0;font-size:28px;color:var(--title)}
 .search{display:flex;gap:8px;flex:1;min-width:240px;max-width:460px}
@@ -55,7 +55,8 @@ main:not(:has(.row))::before{content:"✨ Finding nuggets…";display:block;text
 @keyframes pulse{50%{opacity:.4}}
 .row{animation:fadein .35s ease}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}}
-h1,h2,.btn{font-family:"Patrick Hand",system-ui,sans-serif;font-weight:400}
+h1,h2{font-weight:900}
+.btn{font-weight:700}
 h1{font-size:36px}
 .row h2{font-size:28px}
 dialog p{font-size:18px}
@@ -64,27 +65,27 @@ dialog p{font-size:18px}
 .btn{font-size:19px}
 dialog .btn{font-size:18px}
 dialog .credit{font-size:13px}
-dialog h3{font-size:24px;font-weight:400}
+dialog h3{font-size:19px;font-weight:800}
 .search input{font-size:17px}
 .cat-title{color:var(--cd)}
 @media (prefers-color-scheme:dark){.cat-title{color:var(--c)}}
-/* Sizes tuned for Patrick Hand */
-h1{font-size:36px}
-.row h2{font-size:28px}
-.card h3{font-size:20px;font-weight:400}
-dialog p{font-size:19px;line-height:1.4}
-.src{font-size:15px}
-.btn,dialog .btn{font-size:19px}
-dialog .credit{font-size:14px}
-.search input,input,select,textarea,button{font-family:"Patrick Hand",system-ui,sans-serif;font-size:18px}
-.note{font-size:16px}
+/* Sizes tuned for Nunito */
+h1{font-size:30px}
+.row h2{font-size:22px}
+.card h3{font-size:15px;font-weight:700}
+dialog p{font-size:16px;line-height:1.5}
+.src{font-size:12px}
+.btn,dialog .btn{font-size:15px}
+dialog .credit{font-size:12px}
+.search input,input,select,textarea,button{font-family:"Nunito",system-ui,sans-serif;font-size:16px}
+.note{font-size:14px}
 /* Phones: two cards of a category side by side, same height, swipe one card at a time */
 @media (max-width:640px){
   .cards{gap:12px}
   .card{flex:0 0 calc((100vw - 44px) / 2)}
   .card .thumb{height:120px}
   .card .body{height:104px;flex:none;padding:8px 10px 10px;gap:4px}
-  .card h3{font-size:17px;line-height:1.2;-webkit-line-clamp:3}
-  .src{font-size:13px}
+  .card h3{font-size:14px;line-height:1.25;-webkit-line-clamp:3}
+  .src{font-size:11px}
   .src a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }

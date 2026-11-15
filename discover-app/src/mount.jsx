@@ -1,6 +1,8 @@
 import { createRoot } from "react-dom/client";
-// Hand-drawn font, bundled with the app (Patrick Hand, SIL Open Font License)
-import "@fontsource/patrick-hand/latin-400.css";
+// Nunito font, bundled with the app (SIL Open Font License)
+import "@fontsource/nunito/latin-400.css";
+import "@fontsource/nunito/latin-700.css";
+import "@fontsource/nunito/latin-900.css";
 import "./style.css";
 
 export const mount = App => createRoot(document.getElementById("root")).render(<App />);
