@@ -46,9 +46,9 @@ function NuggetDialog({ open, onClose }) {
         <div className="inner">
           <h3>{n.title}</h3>
           <p>{n.summary || "No summary available. Tap Visit site to read more."}</p>
-          <small className="note">Text: {n.source}, <a href={n.license[1]} target="_blank" rel="noopener">{n.license[0]}</a>. Art: drawn by this site.</small>
+          <small className="note credit">Text: {n.source} · <a href={n.license[1]} target="_blank" rel="noopener">{n.license[0]}</a> · Art by NuggetBox</small>
           <div className="actions">
-            <button className="btn ghost" onClick={onClose}>Close</button>
+            <button className="btn ghost" autoFocus onClick={onClose}>Close</button>
             <a className="btn" href={n.url} target="_blank" rel="noopener">Visit site ↗</a>
           </div>
         </div>

@@ -1,7 +1,7 @@
 // Free, keyless sources (Wikipedia only for now). Each returns [{title,image,summary,url,source}]
 
 // Keep summaries under 100 words, ending at a full sentence where possible
-function shorten(t, max = 99) {
+function shorten(t, max = 55) {
   const sents = (t || "").match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) || [];
   let out = "", n = 0;
   for (const s of sents) { const w = s.trim().split(/\s+/).length; if (n + w > max) break; out += s; n += w; }
