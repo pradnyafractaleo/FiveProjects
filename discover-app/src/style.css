@@ -83,3 +83,13 @@ dialog p{font-size:19px;line-height:1.4}
 dialog .credit{font-size:14px}
 .search input,input,select,textarea,button{font-family:"Patrick Hand",system-ui,sans-serif;font-size:18px}
 .note{font-size:16px}
+/* Phones: two category sections fit on one screen, every card the same height */
+@media (max-width:640px){
+  .row{margin:10px 0}
+  .row h2{margin-bottom:4px}
+  .cards{padding-bottom:8px}
+  .card .thumb{height:clamp(95px,calc(50svh - 248px),230px)}
+  .card .body{height:98px;flex:none;padding:8px 12px 10px;gap:4px}
+  .card h3{line-height:1.2}
+  .card h3{-webkit-line-clamp:2}
+}
