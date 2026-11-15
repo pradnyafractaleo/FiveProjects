@@ -17,7 +17,7 @@ function CategoryEditor({ c, i, total, update, move, remove }) {
         <select value={c.style || "surprise"} onChange={e => update({ style: e.target.value })}>
           {Object.entries(ART_STYLES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>{" "}
-        <img alt="" src={makeArt(c.name || "x", c.style || "surprise", "")} style={{ height: 40, borderRadius: 8, verticalAlign: "middle" }} />
+        <img alt="" src={makeArt(c.name || "x", c.style || "surprise")} style={{ height: 40, borderRadius: 8, verticalAlign: "middle" }} />
       </div>
       {field("query", "Search words (what to look up on Wikipedia)", "full")}
       <div className="full actions">
@@ -81,7 +81,7 @@ export default function Admin() {
               remove={() => setCats(L => { L.splice(i, 1); return L; })} />
           ))}
           <div className="actions">
-            <button className="btn alt" onClick={() => setCats(L => [...L, { name: "New category", emoji: "✨", query: "", style: "surprise", sources: ["wikipedia"] }])}>➕ Add category</button>
+            <button className="btn alt" onClick={() => setCats(L => [...L, { name: "New category", query: "", style: "surprise" }])}>➕ Add category</button>
             <button className="btn" onClick={() => { ls.set("nuggetConfig", JSON.stringify(cfg)); setStatus("Saved on this device ✅"); }}>💾 Save on this device</button>
           </div>
           <h2>Sync to all devices</h2>

@@ -4,7 +4,7 @@ import { ART_STYLES, makeArt, titleColors } from "./art.js";
 
 const styleOf = (c, i) => c.style || Object.keys(ART_STYLES)[i % 14];
 const Art = ({ n, style, seed = "", className = "thumb" }) => (
-  <div className={className} style={{ backgroundImage: `url("${makeArt(seed + n.title, style, "")}")` }} />
+  <div className={className} style={{ backgroundImage: `url("${makeArt(seed + n.title, style)}")` }} />
 );
 
 function Row({ cat, idx, onOpen }) {
@@ -92,7 +92,7 @@ export default function Feed() {
   const pull = usePullToRefresh();
   const [cfg, setCfg] = useState(null), [q, setQ] = useState(""), [search, setSearch] = useState(null), [open, setOpen] = useState(null);
   useEffect(() => { loadConfig().then(c => { setCfg(c); document.title = c.title || "NuggetBox"; }); }, []);
-  const cats = cfg ? [...(search ? [{ name: `Results for “${search}”`, emoji: "🔎", query: search, style: "surprise", sources: ["wikipedia"] }] : []), ...cfg.categories] : [];
+  const cats = cfg ? [...(search ? [{ name: `Results for “${search}”`, query: search, style: "surprise" }] : []), ...cfg.categories] : [];
   return (
     <>
       {pull !== 0 && (

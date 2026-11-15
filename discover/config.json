@@ -4,29 +4,17 @@
   "categories": [
     {
       "name": "Life",
-      "emoji": "🌈",
       "query": "happiness habits",
-      "sources": [
-        "wikipedia"
-      ],
       "style": "surprise"
     },
     {
       "name": "Gardening",
-      "emoji": "🌻",
       "query": "gardening",
-      "sources": [
-        "wikipedia"
-      ],
       "style": "surprise"
     },
     {
       "name": "Tech",
-      "emoji": "🚀",
       "query": "technology",
-      "sources": [
-        "wikipedia"
-      ],
       "style": "surprise"
     }
   ]
