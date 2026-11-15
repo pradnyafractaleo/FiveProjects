@@ -3,7 +3,7 @@ export default function About() {
     <>
       <header><h1>About &amp; credits</h1><a className="btn ghost" href="index.html">← Back to feed</a></header>
       <div className="panel">
-        <p>Nugget Feed is a personal, non-commercial page that points to interesting things on the web. Every card links back to where it came from. We don't host or claim ownership of anyone else's content.</p>
+        <p>NuggetBox is a personal, non-commercial page that points to interesting things on the web. Every card links back to where it came from. We don't host or claim ownership of anyone else's content.</p>
         <h2>Source</h2>
         <ul><li><b>Wikipedia</b>: short intro excerpts, used under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Each card links to the original article and its contributors.</li></ul>
         <h2>Images</h2>

@@ -59,12 +59,12 @@ function NuggetDialog({ open, onClose }) {
 
 export default function Feed() {
   const [cfg, setCfg] = useState(null), [q, setQ] = useState(""), [search, setSearch] = useState(null), [open, setOpen] = useState(null);
-  useEffect(() => { loadConfig().then(c => { setCfg(c); document.title = c.title || "Nugget Feed"; }); }, []);
+  useEffect(() => { loadConfig().then(c => { setCfg(c); document.title = c.title || "NuggetBox"; }); }, []);
   const cats = cfg ? [...(search ? [{ name: `Results for “${search}”`, emoji: "🔎", query: search, style: "surprise", sources: ["wikipedia"] }] : []), ...cfg.categories] : [];
   return (
     <>
       <header>
-        <h1>{cfg?.title || "Nugget Feed"}</h1>
+        <h1>{cfg?.title || "NuggetBox"}</h1>
         <form className="search" onSubmit={e => { e.preventDefault(); setSearch(q.trim() || null); }}>
           <input type="search" value={q} onChange={e => setQ(e.target.value)} placeholder="Search anything… 🔍" />
           <button className="btn">Go</button>

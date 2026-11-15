@@ -1,4 +1,4 @@
-# Nugget Feed
+# NuggetBox
 
 A colorful feed of bite-size "nuggets" from free sources (Wikipedia for now). No keys needed.
 

@@ -1,6 +1,6 @@
 {
-  "name": "Nugget Feed",
-  "short_name": "Nuggets",
+  "name": "NuggetBox",
+  "short_name": "NuggetBox",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
