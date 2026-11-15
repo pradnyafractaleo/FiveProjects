@@ -1,0 +1,33 @@
+{
+  "title": "Nugget Feed",
+  "passcodeHash": "f08b813699f3146a9daa9c585dffb7373955156453e37b0bbd7335477b8289b9",
+  "categories": [
+    {
+      "name": "Life",
+      "emoji": "🌈",
+      "query": "happiness habits",
+      "sources": [
+        "wikipedia"
+      ],
+      "style": "surprise"
+    },
+    {
+      "name": "Gardening",
+      "emoji": "🌻",
+      "query": "gardening",
+      "sources": [
+        "wikipedia"
+      ],
+      "style": "surprise"
+    },
+    {
+      "name": "Tech",
+      "emoji": "🚀",
+      "query": "technology",
+      "sources": [
+        "wikipedia"
+      ],
+      "style": "surprise"
+    }
+  ]
+}

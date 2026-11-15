@@ -3,87 +3,9 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Nugget Admin</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap">
-<link rel="stylesheet" href="style.css?v=4">
-</head><body>
-<header><h1>⚙️ Admin</h1><a class="btn ghost" href="index.html">← Back to feed</a></header>
-<div class="panel" id="login">
-  <p>Enter your passcode.</p>
-  <form id="loginForm" class="search"><input type="password" id="pass" placeholder="Passcode"><button class="btn">Unlock</button></form>
-  <p class="note" id="err"></p>
-</div>
-<div class="panel" id="editor" hidden>
-  <label class="note">Site title</label><input type="text" id="siteTitle">
-  <div id="cats"></div>
-  <div class="actions">
-    <button class="btn alt" id="add">➕ Add category</button>
-    <button class="btn" id="save">💾 Save on this device</button>
-  </div>
-  <h2>Sync to all devices</h2>
-  <p class="note">Publishing writes config.json to GitHub so your PC, Mac and iPhone all see the same categories. Needs a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained GitHub token</a> with "Contents: read and write" on this repo only. It is stored only in this browser.</p>
-  <input type="text" id="repo" placeholder="owner/repo e.g. pradnyafractaleo/fiveprojects">
-  <input type="text" id="branch" placeholder="branch e.g. main" style="margin-top:8px">
-  <input type="password" id="token" placeholder="GitHub token" style="margin-top:8px">
-  <label class="note"><input type="text" id="newPass" placeholder="New passcode (optional)" style="margin-top:8px"></label>
-  <div class="actions" style="margin-top:8px"><button class="btn danger" id="publish">🚀 Publish to all devices</button></div>
-  <p class="note" id="status"></p>
-</div>
-<script src="sources.js?v=4"></script>
-<script src="art.js?v=4"></script>
-<script>
-const sha = async s => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2,"0")).join("");
-const ls = { get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }, set: (k,v) => { try { localStorage.setItem(k,v); } catch {} } };
-let cfg;
-function render() {
-  cats.innerHTML = "";
-  cfg.categories.forEach((c, i) => {
-    const d = document.createElement("div"); d.className = "cat";
-    d.innerHTML = `
-      <div><label>Emoji</label><input type="text" data-k="emoji"></div>
-      <div><label>Category name</label><input type="text" data-k="name"></div>
-      <div class="full"><label>Card art style</label> <select data-k="style">${Object.entries(ART_STYLES).map(([k,v]) => `<option value="${k}">${v}</option>`).join("")}</select> <img class="preview" alt="" style="height:40px;border-radius:8px;vertical-align:middle"></div>
-      <div class="full"><label>Search words (what to look up on Wikipedia)</label><input type="text" data-k="query"></div>
-      <div class="full checks">${Object.entries(SOURCE_NAMES).map(([k,v]) => `<label><input type="checkbox" value="${k}" ${c.sources?.includes(k) ? "checked" : ""}> ${v}</label>`).join("")}</div>
-      <div class="full actions"><button class="btn ghost" data-a="up">↑</button><button class="btn ghost" data-a="down">↓</button><button class="btn danger" data-a="del">Delete</button></div>`;
-    if (!c.style) c.style = "surprise";
-    const prev = () => d.querySelector(".preview").src = makeArt(c.name || "x", c.style, c.emoji || "✨");
-    d.querySelectorAll("[data-k]").forEach(inp => { inp.value = c[inp.dataset.k] || ""; inp.oninput = inp.onchange = () => { c[inp.dataset.k] = inp.value.trim(); prev(); }; });
-    prev();
-    d.querySelectorAll("input[type=checkbox]").forEach(cb => cb.onchange = () => c.sources = [...d.querySelectorAll("input[type=checkbox]:checked")].map(x => x.value));
-    d.querySelectorAll("button[data-a]").forEach(b => b.onclick = () => {
-      const a = b.dataset.a, L = cfg.categories;
-      if (a === "del" && confirm(`Delete ${c.name}?`)) L.splice(i, 1);
-      if (a === "up" && i > 0) [L[i-1], L[i]] = [L[i], L[i-1]];
-      if (a === "down" && i < L.length - 1) [L[i+1], L[i]] = [L[i], L[i+1]];
-      render();
-    });
-    cats.appendChild(d);
-  });
-}
-loginForm.onsubmit = async e => {
-  e.preventDefault(); cfg = await loadConfig();
-  if (await sha(pass.value) !== cfg.passcodeHash) { err.textContent = "Wrong passcode 🙈"; return; }
-  login.hidden = true; editor.hidden = false;
-  siteTitle.value = cfg.title || ""; siteTitle.oninput = () => cfg.title = siteTitle.value;
-  repo.value = ls.get("ghRepo") || "pradnyafractaleo/fiveprojects"; branch.value = ls.get("ghBranch") || "main"; token.value = ls.get("ghToken");
-  render();
-};
-add.onclick = () => { cfg.categories.push({ name: "New category", emoji: "✨", query: "", sources: ["wikipedia"] }); render(); };
-save.onclick = () => { ls.set("nuggetConfig", JSON.stringify(cfg)); status.textContent = "Saved on this device ✅"; };
-publish.onclick = async () => {
-  if (newPass.value) cfg.passcodeHash = await sha(newPass.value);
-  ls.set("ghRepo", repo.value); ls.set("ghBranch", branch.value); ls.set("ghToken", token.value);
-  const api = `https://api.github.com/repos/${repo.value}/contents/discover/config.json`;
-  const h = { Authorization: `Bearer ${token.value}`, Accept: "application/vnd.github+json" };
-  status.textContent = "Publishing…";
-  try {
-    const cur = await fetch(`${api}?ref=${branch.value}`, { headers: h }).then(r => r.ok ? r.json() : {});
-    const body = JSON.stringify(cfg, null, 2);
-    const r = await fetch(api, { method: "PUT", headers: h, body: JSON.stringify({ message: "Update feed categories", branch: branch.value, sha: cur.sha,
-      content: btoa(String.fromCharCode(...new TextEncoder().encode(body))) }) });
-    if (!r.ok) throw new Error((await r.json()).message);
-    try { localStorage.removeItem("nuggetConfig"); } catch {}
-    status.textContent = "Published 🎉 All devices update in about a minute.";
-  } catch (x) { status.textContent = "Publish failed: " + x.message; }
-};
-</script>
+  <script type="module" crossorigin src="./assets/admin-B84dGkxf.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/mount-BtavLscX.js">
+  <link rel="modulepreload" crossorigin href="./assets/art-CZN9-Uu3.js">
+  <link rel="stylesheet" crossorigin href="./assets/mount-ClQ_9e4R.css">
+</head><body><div id="root"></div>
 </body></html>

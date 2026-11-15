@@ -1,3 +1,4 @@
+export { ART_STYLES, makeArt };
 // Code-generated SVG card art. No image files or services: each card gets a unique
 // illustration from its title (seed) in its category's style.
 const ART_STYLES = { surprise: "Surprise me (mix)", blobs: "Blobs", confetti: "Confetti", waves: "Waves", garden: "Garden", stars: "Stars", stripes: "Stripes",

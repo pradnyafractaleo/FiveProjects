@@ -1,6 +1,8 @@
 # Nugget Feed
 
-A colorful feed of bite-size "nuggets" from free sources (Wikipedia for now). No keys, no build step.
+A colorful feed of bite-size "nuggets" from free sources (Wikipedia for now). No keys needed.
+
+Source code is in `discover-app/` (React + Vite). Run `npm install` then `npm run build` there; it builds into `discover/`, which GitHub Pages serves.
 
 - `index.html`: main portal. One row of cards per category, plus search. Tap a card for a summary and a link to the source.
 - `admin.html`: passcode-protected admin. Add, edit, reorder or delete categories. Default passcode is `fractaleo` (change it from the admin page).

@@ -1,5 +1,5 @@
 // Free, keyless sources (Wikipedia only for now). Each returns [{title,image,summary,url,source}]
-const strip = s => (s || "").replace(/<[^>]+>/g, "").replace(/&[a-z#0-9]+;/gi, " ").trim();
+
 // Keep summaries under 100 words, ending at a full sentence where possible
 function shorten(t, max = 99) {
   const sents = (t || "").match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) || [];
@@ -32,3 +32,4 @@ async function loadConfig() {
   return (await fetch("config.json?" + Date.now())).json();
 }
 
+export { shorten, SOURCE_NAMES, fetchCategory, loadConfig };
