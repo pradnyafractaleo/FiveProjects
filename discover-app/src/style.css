@@ -84,7 +84,7 @@ dialog .credit{font-size:12px}
   .cards{gap:12px}
   .card{flex:0 0 calc((100vw - 44px) / 2)}
   .card .thumb{height:120px}
-  .card .body{height:104px;flex:none;padding:8px 10px 10px;gap:4px}
+  .card .body{padding:10px 12px 12px}
   .card h3{font-size:14px;line-height:1.25;-webkit-line-clamp:3}
   .src{font-size:11px}
   .src a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

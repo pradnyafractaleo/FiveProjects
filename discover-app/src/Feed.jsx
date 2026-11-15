@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { fetchCategory, loadConfig } from "./sources.js";
 import { ART_STYLES, makeArt, titleColors } from "./art.js";
 
-const host = u => { try { return new URL(u).hostname.replace("www.", ""); } catch { return ""; } };
 const styleOf = (c, i) => c.style || Object.keys(ART_STYLES)[i % 14];
 const Art = ({ n, style, seed = "", className = "thumb" }) => (
   <div className={className} style={{ backgroundImage: `url("${makeArt(seed + n.title, style, "")}")` }} />
@@ -34,10 +33,6 @@ function Row({ cat, idx, onOpen }) {
             <Art n={n} style={style} seed={cat.name} />
             <div className="body">
               <h3>{n.title}</h3>
-              <div className="src">
-                <span className="pill">{n.source}</span>
-                <a href={n.url} target="_blank" rel="noopener" onClick={e => e.stopPropagation()}>{host(n.url)} ↗</a>
-              </div>
             </div>
           </div>
         ))}
