@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchCategory, loadConfig } from "./sources.js";
-import { ART_STYLES, makeArt } from "./art.js";
+import { ART_STYLES, makeArt, makeHighlight } from "./art.js";
 
 const host = u => { try { return new URL(u).hostname.replace("www.", ""); } catch { return ""; } };
 const styleOf = (c, i) => c.style || Object.keys(ART_STYLES)[i % 14];
@@ -26,7 +26,7 @@ function Row({ cat, idx, onOpen }) {
   if (!items) return null;
   return (
     <section className="row">
-      <h2>{cat.emoji} {cat.name}</h2>
+      <h2><span className="sketch-title" style={{ backgroundImage: `url("${makeHighlight(cat.name)}")` }}>{cat.name}</span></h2>
       <div className="cards">
         {!items.length && <p className="empty">Nothing found right now. Try different search words in Admin.</p>}
         {items.map(n => (

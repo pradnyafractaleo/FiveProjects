@@ -11,8 +11,7 @@ function CategoryEditor({ c, i, total, update, move, remove }) {
   );
   return (
     <div className="cat">
-      {field("emoji", "Emoji")}
-      {field("name", "Category name")}
+      {field("name", "Category name", "full")}
       <div className="full">
         <label>Card art style</label>{" "}
         <select value={c.style || "surprise"} onChange={e => update({ style: e.target.value })}>
