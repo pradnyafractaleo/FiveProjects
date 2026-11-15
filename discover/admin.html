@@ -13,6 +13,8 @@
 </div>
 <div class="panel" id="editor" hidden>
   <label class="note">Site title</label><input type="text" id="siteTitle">
+  <label class="note">Smithsonian image key (free from <a href="https://api.data.gov/signup/" target="_blank" rel="noopener">api.data.gov/signup</a>). Leave empty for emoji cards. Note: once published it's visible in config.json, which is normal for this free, rate-limited key.</label>
+  <input type="text" id="siKey" placeholder="api.data.gov key">
   <div id="cats"></div>
   <div class="actions">
     <button class="btn alt" id="add">➕ Add category</button>
@@ -59,6 +61,7 @@ loginForm.onsubmit = async e => {
   if (await sha(pass.value) !== cfg.passcodeHash) { err.textContent = "Wrong passcode 🙈"; return; }
   login.hidden = true; editor.hidden = false;
   siteTitle.value = cfg.title || ""; siteTitle.oninput = () => cfg.title = siteTitle.value;
+  siKey.value = cfg.siKey || ""; siKey.oninput = () => cfg.siKey = siKey.value.trim();
   repo.value = ls.get("ghRepo") || "pradnyafractaleo/fiveprojects"; branch.value = ls.get("ghBranch") || "main"; token.value = ls.get("ghToken");
   render();
 };

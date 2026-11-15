@@ -26,11 +26,13 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const host = u => { try { return new URL(u).hostname.replace("www.",""); } catch { return ""; } };
 function thumb(el, n, emoji, i) {
   el.style.backgroundImage = `linear-gradient(135deg,${COLORS[i%6]},${COLORS[(i+2)%6]})`; el.textContent = emoji;
+  if (n.si) el.style.backgroundImage = `url("${n.si.url.replace(/"/g,"%22")}")`, el.textContent = "";
 }
 function openNugget(n, emoji, i, cat) {
   thumb(dImg, n, emoji, i, cat); dTitle.textContent = n.title;
   dSum.textContent = n.summary || "No summary available — tap Visit site to read more.";
-  dCredit.innerHTML = n.license ? `Text: ${esc(n.source)}, <a href="${n.license[1]}" target="_blank" rel="noopener">${n.license[0]}</a>` : `${n.author ? "By " + esc(n.author) + " on " : "From "}${esc(n.source)}`;
+  dCredit.innerHTML = `Text: ${esc(n.source)}, <a href="${n.license[1]}" target="_blank" rel="noopener">${n.license[0]}</a>.` +
+    (n.si ? ` Image: <a href="${esc(n.si.link)}" target="_blank" rel="noopener">${esc(n.si.title)}</a>, Smithsonian Open Access (CC0).` : "");
   dLink.href = n.url; dlg.showModal();
 }
 async function addRow(c, idx) {
@@ -47,6 +49,7 @@ async function addRow(c, idx) {
     card.querySelector("a").onclick = e => e.stopPropagation();
     card.onclick = () => openNugget(n, c.emoji || "✨", i + idx, c.name);
     box.appendChild(card);
+    siImage(n.title, c.query || c.name, cfg.siKey).then(si => { if (si) { n.si = si; thumb(card.querySelector(".thumb"), n, c.emoji || "✨", i + idx); } });
   });
 }
 let cfg;
