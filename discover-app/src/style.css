@@ -48,11 +48,6 @@ header h1{flex:1}
 header .search{order:3;flex-basis:100%;max-width:none}
 @media (min-width:700px){header .search{order:1;flex:0 1 420px}}
 .card{scroll-snap-stop:always}
-@media (max-width:640px){
-  .card{flex:0 0 calc(100vw - 32px)}
-  .card .thumb{height:210px}
-  .card h3{font-size:18px}
-}
 dialog .credit{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:10px}
 dialog:focus{outline:none}
 dialog :focus:not(:focus-visible){outline:none}
@@ -83,13 +78,13 @@ dialog p{font-size:19px;line-height:1.4}
 dialog .credit{font-size:14px}
 .search input,input,select,textarea,button{font-family:"Patrick Hand",system-ui,sans-serif;font-size:18px}
 .note{font-size:16px}
-/* Phones: two category sections fit on one screen, every card the same height */
+/* Phones: two cards of a category side by side, same height, swipe one card at a time */
 @media (max-width:640px){
-  .row{margin:10px 0}
-  .row h2{margin-bottom:4px}
-  .cards{padding-bottom:8px}
-  .card .thumb{height:clamp(95px,calc(50svh - 248px),230px)}
-  .card .body{height:98px;flex:none;padding:8px 12px 10px;gap:4px}
-  .card h3{line-height:1.2}
-  .card h3{-webkit-line-clamp:2}
+  .cards{gap:12px}
+  .card{flex:0 0 calc((100vw - 44px) / 2)}
+  .card .thumb{height:120px}
+  .card .body{height:104px;flex:none;padding:8px 10px 10px;gap:4px}
+  .card h3{font-size:17px;line-height:1.2;-webkit-line-clamp:3}
+  .src{font-size:13px}
+  .src a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
