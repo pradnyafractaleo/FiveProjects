@@ -22,8 +22,8 @@ const SOURCE_NAMES = { wikipedia: "Wikipedia" };
 async function fetchCategory(c) {
   const lists = await Promise.allSettled((c.sources || Object.keys(SOURCES)).map(s => SOURCES[s] ? SOURCES[s](c) : []));
   const all = lists.flatMap(l => l.status === "fulfilled" ? l.value : []);
-  // interleave sources a bit by shuffling
-  return all.sort(() => Math.random() - 0.5).slice(0, 16);
+  // Keep the source order stable so a cached row and a fresh row look the same
+  return all.slice(0, 16);
 }
 
 // Config: this device's saved copy wins, else the published config.json

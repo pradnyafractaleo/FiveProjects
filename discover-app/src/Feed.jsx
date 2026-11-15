@@ -9,14 +9,26 @@ const Art = ({ n, style, seed = "", className = "thumb" }) => (
 );
 
 function Row({ cat, idx, onOpen }) {
-  const [items, setItems] = useState(null);
-  useEffect(() => { let live = true; fetchCategory(cat).then(x => live && setItems(x)); return () => { live = false; }; }, [cat]);
+  // Show the last saved cards instantly, then refresh them in the background
+  const key = "row:" + (cat.query || cat.name);
+  const [items, setItems] = useState(() => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } });
+  useEffect(() => {
+    let live = true;
+    fetchCategory(cat).then(x => {
+      if (!live) return;
+      if (x.length || !items) setItems(x);
+      if (x.length) try { localStorage.setItem(key, JSON.stringify(x)); } catch {}
+    });
+    return () => { live = false; };
+  }, [cat]);
   const style = styleOf(cat, idx);
   return (
     <section className="row">
       <h2>{cat.emoji} {cat.name}</h2>
       <div className="cards">
-        {!items && <p className="empty">Finding nuggets…</p>}
+        {!items && [0, 1, 2].map(i => (
+          <div className="card skeleton" key={i} aria-hidden="true"><div className="thumb" /><div className="body"><span /><span /></div></div>
+        ))}
         {items && !items.length && <p className="empty">Nothing found right now. Try different search words in Admin.</p>}
         {items?.map(n => (
           <div className="card" key={n.url} onClick={() => onOpen(n, style, cat.name)}>
