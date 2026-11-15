@@ -57,12 +57,41 @@ function NuggetDialog({ open, onClose }) {
   );
 }
 
+// Pull down at the top of the page to check for the newest version and reload (handy in the installed app)
+function usePullToRefresh() {
+  const [pull, setPull] = useState(0);
+  useEffect(() => {
+    let startY = null, dist = 0;
+    const down = e => { startY = window.scrollY <= 0 ? e.touches[0].clientY : null; dist = 0; };
+    const move = e => { if (startY === null) return; dist = Math.max(0, e.touches[0].clientY - startY); setPull(Math.min(dist, 110)); };
+    const up = async () => {
+      if (startY !== null && dist > 80) {
+        setPull(-1);
+        try { const reg = await navigator.serviceWorker?.getRegistration(); await reg?.update(); } catch {}
+        location.reload();
+      } else setPull(0);
+      startY = null;
+    };
+    window.addEventListener("touchstart", down, { passive: true });
+    window.addEventListener("touchmove", move, { passive: true });
+    window.addEventListener("touchend", up);
+    return () => { window.removeEventListener("touchstart", down); window.removeEventListener("touchmove", move); window.removeEventListener("touchend", up); };
+  }, []);
+  return pull;
+}
+
 export default function Feed() {
+  const pull = usePullToRefresh();
   const [cfg, setCfg] = useState(null), [q, setQ] = useState(""), [search, setSearch] = useState(null), [open, setOpen] = useState(null);
   useEffect(() => { loadConfig().then(c => { setCfg(c); document.title = c.title || "NuggetBox"; }); }, []);
   const cats = cfg ? [...(search ? [{ name: `Results for “${search}”`, emoji: "🔎", query: search, style: "surprise", sources: ["wikipedia"] }] : []), ...cfg.categories] : [];
   return (
     <>
+      {pull !== 0 && (
+        <div className="ptr" style={{ height: pull < 0 ? 50 : pull / 1.6 }}>
+          {pull < 0 ? "Refreshing…" : pull > 80 ? "↻ Release to refresh" : "↓ Pull to refresh"}
+        </div>
+      )}
       <header>
         <h1>{cfg?.title || "NuggetBox"}</h1>
         <form className="search" onSubmit={e => { e.preventDefault(); setSearch(q.trim() || null); }}>

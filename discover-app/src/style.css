@@ -1,7 +1,7 @@
 :root{--bg:#fff8f0;--ink:#2b2140;--muted:#6b6180;--card:#ffffff;--line:#f0e4d8;--pop1:#ff6b9d;--pop2:#ffb347;--pop3:#4ecdc4;--pop4:#7b6cff;--title:#1f9e89}
 @media (prefers-color-scheme:dark){:root{--bg:#1b1726;--ink:#f6f0ff;--muted:#b3a9c9;--card:#262036;--line:#383050;--title:#5fd3bf}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,sans-serif}
+body{margin:0;overscroll-behavior-y:contain;background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,sans-serif}
 header{padding:20px 16px 8px;max-width:1200px;margin:auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
 h1{margin:0;font-size:28px;color:var(--title)}
 .search{display:flex;gap:8px;flex:1;min-width:240px;max-width:460px}
@@ -42,3 +42,4 @@ dialog p{font-size:14px;line-height:1.45;margin:0 0 8px;color:var(--muted);white
 .thumb img:not(:only-child){position:absolute;inset:0;opacity:0}
 .note a{color:var(--pop4)}
 .panel h2{margin-top:24px}
+.ptr{display:flex;align-items:flex-end;justify-content:center;overflow:hidden;color:var(--title);font-weight:700;font-size:14px;padding-bottom:6px}
