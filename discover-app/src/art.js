@@ -15,29 +15,46 @@ function seedRand(str) {
 
 const gen = rough.generator();
 
-// Curated pastel palettes (5 colors each), in the spirit of the pastel collections on
-// Color Hunt (https://colorhunt.co/palettes/pastel) and Coolors (https://coolors.co/palettes/popular/pastel).
-const PASTELS = [
-  ["#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#9bf6ff"],
-  ["#a0c4ff", "#bdb2ff", "#ffc6ff", "#fffffc", "#caffbf"],
-  ["#cdb4db", "#ffc8dd", "#ffafcc", "#bde0fe", "#a2d2ff"],
-  ["#f7d9c4", "#faedcb", "#c9e4de", "#c6def1", "#dbcdf0"],
-  ["#ffb5e8", "#b28dff", "#aff8db", "#fff5ba", "#c4faf8"],
-  ["#e4c1f9", "#f694c1", "#ede7b1", "#a9def9", "#d3f8e2"],
-  ["#fbf8cc", "#fde4cf", "#ffcfd2", "#f1c0e8", "#cfbaf0"],
-  ["#90dbf4", "#8eecf5", "#98f5e1", "#b9fbc0", "#a3c4f3"],
-  ["#b8e0d2", "#d6eadf", "#eac4d5", "#95b8d1", "#809bce"],
-  ["#ffe5ec", "#ffc2d1", "#ffb3c6", "#ff8fab", "#fbe7c6"],
-  ["#d8f3dc", "#b7e4c7", "#95d5b2", "#fff1e6", "#fde2e4"],
-  ["#fec5bb", "#fcd5ce", "#e8e8e4", "#d8e2dc", "#ece4db"],
-];
+// Color collections. Each time the app opens it picks one collection at random (never the same twice in a row),
+// and every card in that visit uses palettes from it. Pastels are in the spirit of Color Hunt / Coolors pastel sets.
+const COLLECTIONS = {
+  Pastel: [
+    ["#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#9bf6ff"], ["#a0c4ff", "#bdb2ff", "#ffc6ff", "#fffffc", "#caffbf"],
+    ["#cdb4db", "#ffc8dd", "#ffafcc", "#bde0fe", "#a2d2ff"], ["#f7d9c4", "#faedcb", "#c9e4de", "#c6def1", "#dbcdf0"],
+    ["#ffb5e8", "#b28dff", "#aff8db", "#fff5ba", "#c4faf8"], ["#e4c1f9", "#f694c1", "#ede7b1", "#a9def9", "#d3f8e2"],
+    ["#fbf8cc", "#fde4cf", "#ffcfd2", "#f1c0e8", "#cfbaf0"], ["#90dbf4", "#8eecf5", "#98f5e1", "#b9fbc0", "#a3c4f3"],
+    ["#b8e0d2", "#d6eadf", "#eac4d5", "#95b8d1", "#809bce"], ["#ffe5ec", "#ffc2d1", "#ffb3c6", "#ff8fab", "#fbe7c6"],
+    ["#d8f3dc", "#b7e4c7", "#95d5b2", "#fff1e6", "#fde2e4"], ["#fec5bb", "#fcd5ce", "#e8e8e4", "#d8e2dc", "#ece4db"],
+    ["#ffc8dd", "#ffafcc", "#bde0fe", "#a2d2ff", "#cdb4db"], ["#d8f3dc", "#b7e4c7", "#95d5b2", "#fdffb6", "#caffbf"],
+    ["#ffadad", "#ffd6a5", "#fdffb6", "#ffc6ff", "#f4acb7"], ["#9bf6ff", "#a0c4ff", "#bdb2ff", "#c1fba4", "#e0fbfc"],
+    ["#e5989b", "#b5838d", "#ffb4a2", "#ffcdb2", "#c9ada7"], ["#ccd5ae", "#e9edc9", "#fefae0", "#faedcd", "#d4a373"],
+  ],
+  "Bold Retro": [["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"]],
+  "Neon Pop": [["#ff006e", "#fb5607", "#ffbe0b", "#8338ec", "#3a86ff"]],
+  Jewel: [["#0b3954", "#087e8b", "#bfd7ea", "#ff5a5f", "#c81d25"]],
+  "Earthy Boho": [["#606c38", "#283618", "#fefae0", "#dda15e", "#bc6c25"]],
+  Nordic: [["#2b2d42", "#8d99ae", "#edf2f4", "#ef233c", "#d90429"]],
+  "Sunset Warm": [["#003049", "#d62828", "#f77f00", "#fcbf49", "#eae2b7"]],
+};
+export const COLLECTION = (() => {
+  const names = Object.keys(COLLECTIONS);
+  let last = ""; try { last = localStorage.getItem("lastCollection") || ""; } catch {}
+  const choices = names.filter(n => n !== last), pickName = choices[Math.floor(Math.random() * choices.length)];
+  try { localStorage.setItem("lastCollection", pickName); } catch {}
+  return pickName;
+})();
+const PASTELS = COLLECTIONS.Pastel, PALS = COLLECTIONS[COLLECTION];
 // A deeper shade of a color, for outlines that stay visible on pastel backgrounds
 const shade = (hex, k = .3) => "#" + [1, 3, 5].map(i => Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - k)).toString(16).padStart(2, "0")).join("");
+const tint = (hex, k = .3) => "#" + [1, 3, 5].map(i => { const v = parseInt(hex.slice(i, i + 2), 16); return Math.round(v + (255 - v) * k).toString(16).padStart(2, "0"); }).join("");
+const lum = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).reduce((s, v, i) => s + v * [.299, .587, .114][i], 0);
+// Outline color: darker on light colors, lighter on dark colors, so shapes always stand out
+const edge = (hex, k = .3) => lum(hex) < .4 ? tint(hex, k + .15) : shade(hex, k);
 const FILLS = ["hachure", "solid", "zigzag", "cross-hatch", "solid"];
 const cache = new Map();
 
 export function makeArt(seed, style) {
-  const key = seed + "|" + style;
+  const key = seed + "|" + style + "|" + COLLECTION;
   if (cache.has(key)) return cache.get(key);
   const R = seedRand(seed + style), r = (a, b) => a + R() * (b - a), pick = a => a[Math.floor(R() * a.length)];
   const W = 440, H = 260; let s = "";
@@ -45,13 +62,13 @@ export function makeArt(seed, style) {
 
   // Every card uses one predefined pastel palette so its colors always go together.
   // The card background is one palette color and the shapes use the others, outlined in a deeper shade.
-  const pal = [...pick(PASTELS)].sort(() => R() - .5), BG = pal[0], P = pal.slice(1);
+  const pal = [...pick(PALS)].sort(() => R() - .5), BG = pal[0], P = pal.slice(1);
   const fillStyle = pick(FILLS), roughness = r(1, 2.4);
 
   // Turn a Rough.js drawable into SVG path elements
   const draw = (d, opacity = 1) => gen.toPaths(d).map(p =>
     `<path d="${p.d}" stroke="${p.stroke}" stroke-width="${p.strokeWidth}" fill="${p.fill || "none"}" opacity="${opacity}" stroke-linecap="round"/>`).join("");
-  const o = (fill, extra = {}) => ({ seed: Math.floor(r(1, 1e6)), roughness, fill, fillStyle, fillWeight: 2, hachureGap: r(5, 9), hachureAngle: r(-60, 60), stroke: shade(fill), strokeWidth: 2, ...extra });
+  const o = (fill, extra = {}) => ({ seed: Math.floor(r(1, 1e6)), roughness, fill, fillStyle, fillWeight: 2, hachureGap: r(5, 9), hachureAngle: r(-60, 60), stroke: edge(fill), strokeWidth: 2, ...extra });
   const line = (c, w = 3) => ({ seed: Math.floor(r(1, 1e6)), roughness, stroke: c, strokeWidth: w });
   // Organic blob from the blobs library, placed at x,y
   const blob = (x, y, size, fill, opacity = 1) =>
@@ -65,7 +82,7 @@ export function makeArt(seed, style) {
   if (style === "waves") for (let i = 0; i < 5; i++) { const y = 40 + i * 50 + r(-10, 10), a = r(15, 35), k = r(60, 120);
     s += draw(gen.path(`M0 ${y} ${Array.from({ length: 8 }, (_, j) => `Q ${j * k + k / 2} ${y + (j % 2 ? a : -a)} ${(j + 1) * k} ${y}`).join(" ")} V${H} H0Z`, o(P[(i + 2) % 4])), .7); }
   if (style === "garden") for (let i = 0; i < 8; i++) { const x = r(20, W - 20), hgt = r(70, 170), top = H - hgt, c = pick(P);
-    s += draw(gen.path(`M${x} ${H} Q${x + r(-25, 25)} ${H - hgt / 2} ${x} ${top}`, line(shade(pick(P), .45), 4)));
+    s += draw(gen.path(`M${x} ${H} Q${x + r(-25, 25)} ${H - hgt / 2} ${x} ${top}`, line(edge(pick(P), .45), 4)));
     s += blob(x + 14, H - hgt / 2, 26, pick(P), .9);
     for (let p = 0; p < 6; p++) { const a = p * Math.PI / 3; s += draw(gen.ellipse(x + 13 * Math.cos(a), top + 13 * Math.sin(a), 16, 24, o(c, { fillStyle: "solid" }))); }
     s += draw(gen.circle(x, top, 12, o("#fff3b0", { fillStyle: "solid" }))); }
@@ -98,7 +115,7 @@ export function makeArt(seed, style) {
 
   // A few hand-drawn sparkles on some cards for extra variety
   if (R() < .4) for (let i = 0; i < 5; i++) { const x = r(0, W), y = r(0, H), z = r(5, 10);
-    s += draw(gen.linearPath([[x - z, y], [x + z, y]], line(shade(BG, .25), 2))) + draw(gen.linearPath([[x, y - z], [x, y + z]], line(shade(BG, .25), 2))); }
+    s += draw(gen.linearPath([[x - z, y], [x + z, y]], line(edge(BG, .25), 2))) + draw(gen.linearPath([[x, y - z], [x, y + z]], line(edge(BG, .25), 2))); }
 
   const bg = `<rect width="${W}" height="${H}" fill="${BG}"/>`;
   const url = "data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${bg}${s}</svg>`);
