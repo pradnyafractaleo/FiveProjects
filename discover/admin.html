@@ -13,8 +13,6 @@
 </div>
 <div class="panel" id="editor" hidden>
   <label class="note">Site title</label><input type="text" id="siteTitle">
-  <label class="note">Smithsonian image key (free from <a href="https://api.data.gov/signup/" target="_blank" rel="noopener">api.data.gov/signup</a>). Leave empty for emoji cards. Note: once published it's visible in config.json, which is normal for this free, rate-limited key.</label>
-  <input type="text" id="siKey" placeholder="api.data.gov key">
   <div id="cats"></div>
   <div class="actions">
     <button class="btn alt" id="add">➕ Add category</button>
@@ -30,6 +28,7 @@
   <p class="note" id="status"></p>
 </div>
 <script src="sources.js"></script>
+<script src="art.js"></script>
 <script>
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2,"0")).join("");
 const ls = { get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }, set: (k,v) => { try { localStorage.setItem(k,v); } catch {} } };
@@ -41,10 +40,14 @@ function render() {
     d.innerHTML = `
       <div><label>Emoji</label><input type="text" data-k="emoji"></div>
       <div><label>Category name</label><input type="text" data-k="name"></div>
+      <div class="full"><label>Card art style</label> <select data-k="style">${Object.entries(ART_STYLES).map(([k,v]) => `<option value="${k}">${v}</option>`).join("")}</select> <img class="preview" alt="" style="height:40px;border-radius:8px;vertical-align:middle"></div>
       <div class="full"><label>Search words (what to look up on Wikipedia)</label><input type="text" data-k="query"></div>
       <div class="full checks">${Object.entries(SOURCE_NAMES).map(([k,v]) => `<label><input type="checkbox" value="${k}" ${c.sources?.includes(k) ? "checked" : ""}> ${v}</label>`).join("")}</div>
       <div class="full actions"><button class="btn ghost" data-a="up">↑</button><button class="btn ghost" data-a="down">↓</button><button class="btn danger" data-a="del">Delete</button></div>`;
-    d.querySelectorAll("input[data-k]").forEach(inp => { inp.value = c[inp.dataset.k] || ""; inp.oninput = () => c[inp.dataset.k] = inp.value.trim(); });
+    if (!c.style) c.style = Object.keys(ART_STYLES)[i % 6];
+    const prev = () => d.querySelector(".preview").src = makeArt(c.name || "x", c.style, c.emoji || "✨");
+    d.querySelectorAll("[data-k]").forEach(inp => { inp.value = c[inp.dataset.k] || ""; inp.oninput = inp.onchange = () => { c[inp.dataset.k] = inp.value.trim(); prev(); }; });
+    prev();
     d.querySelectorAll("input[type=checkbox]").forEach(cb => cb.onchange = () => c.sources = [...d.querySelectorAll("input[type=checkbox]:checked")].map(x => x.value));
     d.querySelectorAll("button[data-a]").forEach(b => b.onclick = () => {
       const a = b.dataset.a, L = cfg.categories;
@@ -61,7 +64,6 @@ loginForm.onsubmit = async e => {
   if (await sha(pass.value) !== cfg.passcodeHash) { err.textContent = "Wrong passcode 🙈"; return; }
   login.hidden = true; editor.hidden = false;
   siteTitle.value = cfg.title || ""; siteTitle.oninput = () => cfg.title = siteTitle.value;
-  siKey.value = cfg.siKey || ""; siKey.oninput = () => cfg.siKey = siKey.value.trim();
   repo.value = ls.get("ghRepo") || "pradnyafractaleo/fiveprojects"; branch.value = ls.get("ghBranch") || "main"; token.value = ls.get("ghToken");
   render();
 };

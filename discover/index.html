@@ -20,19 +20,19 @@
   <div class="actions"><button class="btn ghost" onclick="dlg.close()">Close</button><a class="btn" id="dLink" target="_blank" rel="noopener">Visit site ↗</a></div>
 </div></dialog>
 <script src="sources.js"></script>
+<script src="art.js"></script>
 <script>
-const COLORS = ["#ff6b9d","#ffb347","#4ecdc4","#7b6cff","#7bd389","#ff8a5c"];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const host = u => { try { return new URL(u).hostname.replace("www.",""); } catch { return ""; } };
-function thumb(el, n, emoji, i) {
-  el.style.backgroundImage = `linear-gradient(135deg,${COLORS[i%6]},${COLORS[(i+2)%6]})`; el.textContent = emoji;
-  if (n.si) el.style.backgroundImage = `url("${n.si.url.replace(/"/g,"%22")}")`, el.textContent = "";
+const styleOf = (c, i) => c.style || Object.keys(ART_STYLES)[i % 6];
+function thumb(el, n, emoji, style) {
+  el.textContent = "";
+  el.style.backgroundImage = `url("${makeArt(n.title, style, emoji)}")`;
 }
-function openNugget(n, emoji, i, cat) {
-  thumb(dImg, n, emoji, i, cat); dTitle.textContent = n.title;
+function openNugget(n, emoji, style) {
+  thumb(dImg, n, emoji, style); dTitle.textContent = n.title;
   dSum.textContent = n.summary || "No summary available — tap Visit site to read more.";
-  dCredit.innerHTML = `Text: ${esc(n.source)}, <a href="${n.license[1]}" target="_blank" rel="noopener">${n.license[0]}</a>.` +
-    (n.si ? ` Image: <a href="${esc(n.si.link)}" target="_blank" rel="noopener">${esc(n.si.title)}</a>, Smithsonian Open Access (CC0).` : "");
+  dCredit.innerHTML = `Text: ${esc(n.source)}, <a href="${n.license[1]}" target="_blank" rel="noopener">${n.license[0]}</a>. Art: drawn by this site.`;
   dLink.href = n.url; dlg.showModal();
 }
 async function addRow(c, idx) {
@@ -45,11 +45,10 @@ async function addRow(c, idx) {
     const card = document.createElement("div"); card.className = "card";
     card.innerHTML = `<div class="thumb"></div><div class="body"><h3>${esc(n.title)}</h3>
       <div class="src"><span class="pill">${esc(n.source)}</span><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(host(n.url))} ↗</a></div></div>`;
-    thumb(card.querySelector(".thumb"), n, c.emoji || "✨", i + idx, c.name);
+    thumb(card.querySelector(".thumb"), n, c.emoji || "✨", styleOf(c, idx));
     card.querySelector("a").onclick = e => e.stopPropagation();
-    card.onclick = () => openNugget(n, c.emoji || "✨", i + idx, c.name);
+    card.onclick = () => openNugget(n, c.emoji || "✨", styleOf(c, idx));
     box.appendChild(card);
-    siImage(n.title, c.query || c.name, cfg.siKey).then(si => { if (si) { n.si = si; thumb(card.querySelector(".thumb"), n, c.emoji || "✨", i + idx); } });
   });
 }
 let cfg;

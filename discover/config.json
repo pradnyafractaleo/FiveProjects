@@ -8,7 +8,8 @@
       "query": "happiness habits",
       "sources": [
         "wikipedia"
-      ]
+      ],
+      "style": "confetti"
     },
     {
       "name": "Gardening",
@@ -16,7 +17,8 @@
       "query": "gardening",
       "sources": [
         "wikipedia"
-      ]
+      ],
+      "style": "garden"
     },
     {
       "name": "Tech",
@@ -24,7 +26,8 @@
       "query": "technology",
       "sources": [
         "wikipedia"
-      ]
+      ],
+      "style": "stars"
     }
   ]
 }

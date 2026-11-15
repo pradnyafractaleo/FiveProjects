@@ -24,24 +24,3 @@ async function loadConfig() {
   return (await fetch("config.json?" + Date.now())).json();
 }
 
-// Smithsonian Open Access images (CC0 only). Needs a free api.data.gov key set in Admin.
-// Results (including misses) are cached in this browser so each title is looked up once.
-async function siSearch(q, key) {
-  const u = `https://api.si.edu/openaccess/api/v1.0/search?q=${encodeURIComponent(`${q} AND online_media_type:"Images"`)}&rows=10&api_key=${encodeURIComponent(key)}`;
-  const d = await get(u);
-  for (const r of d.response?.rows || []) {
-    const c = r.content || {};
-    const m = (c.descriptiveNonRepeating?.online_media?.media || []).find(x => x.type === "Images" && x.usage?.access === "CC0");
-    if (m) return { url: m.thumbnail || m.content, title: r.title, link: c.descriptiveNonRepeating?.record_link || `https://collections.si.edu/search/detail/${r.id}` };
-  }
-  return null;
-}
-async function siImage(title, fallback, key) {
-  if (!key) return null;
-  const ck = "si:" + title;
-  try { const hit = localStorage.getItem(ck); if (hit) return JSON.parse(hit); } catch {}
-  let res = null;
-  try { res = await siSearch(title, key) || (fallback ? await siSearch(fallback, key) : null); } catch { return null; }
-  try { localStorage.setItem(ck, JSON.stringify(res)); } catch {}
-  return res;
-}
