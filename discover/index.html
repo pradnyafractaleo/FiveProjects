@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Nugget Feed</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head><body>
 <header>
   <h1 id="title">Nugget Feed</h1>
@@ -19,8 +19,8 @@
   <h3 id="dTitle"></h3><p id="dSum"></p><small class="note" id="dCredit"></small>
   <div class="actions"><button class="btn ghost" onclick="dlg.close()">Close</button><a class="btn" id="dLink" target="_blank" rel="noopener">Visit site ↗</a></div>
 </div></dialog>
-<script src="sources.js?v=3"></script>
-<script src="art.js?v=3"></script>
+<script src="sources.js?v=4"></script>
+<script src="art.js?v=4"></script>
 <script>
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const host = u => { try { return new URL(u).hostname.replace("www.",""); } catch { return ""; } };
