@@ -1,7 +1,7 @@
 :root{--bg:#fff8f0;--ink:#2b2140;--muted:#6b6180;--card:#ffffff;--line:#f0e4d8;--pop1:#ff6b9d;--pop2:#ffb347;--pop3:#4ecdc4;--pop4:#7b6cff;--title:#1f9e89}
 @media (prefers-color-scheme:dark){:root{--bg:#1b1726;--ink:#f6f0ff;--muted:#b3a9c9;--card:#262036;--line:#383050;--title:#5fd3bf}}
 *{box-sizing:border-box}
-body{margin:0;overscroll-behavior-y:contain;background:var(--bg);color:var(--ink);font-family:"Patrick Hand",system-ui,sans-serif;font-size:17px}
+body{margin:0;overscroll-behavior-y:contain;background:var(--bg);color:var(--ink);font-family:"Caveat",cursive;font-size:21px}
 header{padding:20px 16px 8px;max-width:1200px;margin:auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
 h1{margin:0;font-size:28px;color:var(--title)}
 .search{display:flex;gap:8px;flex:1;min-width:240px;max-width:460px}
@@ -60,7 +60,7 @@ main:not(:has(.row))::before{content:"✨ Finding nuggets…";display:block;text
 @keyframes pulse{50%{opacity:.4}}
 .row{animation:fadein .35s ease}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}}
-h1,h2,.btn{font-family:"Caveat Brush","Patrick Hand",cursive;font-weight:400;letter-spacing:.3px}
+h1,h2,.btn{font-family:"Caveat",cursive;font-weight:700}
 h1{font-size:36px}
 .row h2{font-size:28px}
 dialog p{font-size:18px}
@@ -69,7 +69,17 @@ dialog p{font-size:18px}
 .btn{font-size:19px}
 dialog .btn{font-size:18px}
 dialog .credit{font-size:13px}
-dialog h3{font-size:22px;font-family:"Caveat Brush",cursive;font-weight:400}
+dialog h3{font-size:28px;font-weight:700}
 .search input{font-size:17px}
 .cat-title{color:var(--cd)}
 @media (prefers-color-scheme:dark){.cat-title{color:var(--c)}}
+/* Caveat runs small, so sizes are bumped up */
+h1{font-size:42px}
+.row h2{font-size:34px}
+.card h3{font-size:24px;font-weight:700}
+dialog p{font-size:22px;line-height:1.3}
+.src{font-size:17px}
+.btn,dialog .btn{font-size:22px}
+dialog .credit{font-size:16px}
+.search input,input,select,textarea,button{font-family:"Caveat",cursive;font-size:21px}
+.note{font-size:18px}
