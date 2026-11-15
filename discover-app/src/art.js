@@ -106,18 +106,12 @@ export function makeArt(seed, style) {
   return url;
 }
 
-// A colored, hand-drawn highlight to sit behind a section title (one pastel per title)
-export function makeHighlight(seed) {
-  const key = "hl|" + seed;
-  if (cache.has(key)) return cache.get(key);
-  const R = seedRand(seed), r = (a, b) => a + R() * (b - a), pick = arr => arr[Math.floor(R() * arr.length)];
-  const c = pick(pick(PASTELS).filter(x => x !== "#fffffc")), W = 300, H = 60, sd = () => Math.floor(r(1, 1e6));
-  const shapes = [
-    gen.rectangle(6, 8, W - 12, H - 16, { seed: sd(), roughness: 2.2, fill: c, fillStyle: pick(["solid", "hachure", "zigzag"]), hachureGap: 5, fillWeight: 3, stroke: shade(c, .2), strokeWidth: 2 }),
-    gen.linearPath([[6, H - 8], [W - 6, H - 12]], { seed: sd(), roughness: 2, stroke: shade(c, .25), strokeWidth: 4 }),
-  ];
-  const paths = shapes.flatMap(d => gen.toPaths(d)).map(p => `<path d="${p.d}" stroke="${p.stroke}" stroke-width="${p.strokeWidth}" fill="${p.fill || "none"}" stroke-linecap="round"/>`).join("");
-  const url = "data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${paths}</svg>`);
-  cache.set(key, url);
-  return url;
+// A pastel color per section title (plus a deeper shade so it stays readable on light backgrounds)
+export function titleColors(seed) {
+  const R = seedRand(seed), pick = arr => arr[Math.floor(R() * arr.length)];
+  const c = pick(pick(PASTELS).filter(x => x !== "#fffffc"));
+  // light mode: same hue, richer and darker so it reads well on the cream background
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  const h = d === 0 ? 0 : mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return { "--c": c, "--cd": `hsl(${Math.round(h * 60 + 360) % 360},65%,40%)` };
 }
