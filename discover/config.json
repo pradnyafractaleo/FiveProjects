@@ -9,7 +9,7 @@
       "sources": [
         "wikipedia"
       ],
-      "style": "confetti"
+      "style": "surprise"
     },
     {
       "name": "Gardening",
@@ -18,7 +18,7 @@
       "sources": [
         "wikipedia"
       ],
-      "style": "garden"
+      "style": "surprise"
     },
     {
       "name": "Tech",
@@ -27,7 +27,7 @@
       "sources": [
         "wikipedia"
       ],
-      "style": "stars"
+      "style": "surprise"
     }
   ]
 }

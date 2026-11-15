@@ -24,7 +24,7 @@
 <script>
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const host = u => { try { return new URL(u).hostname.replace("www.",""); } catch { return ""; } };
-const styleOf = (c, i) => c.style || Object.keys(ART_STYLES)[i % 6];
+const styleOf = (c, i) => c.style || Object.keys(ART_STYLES)[i % 14];
 function thumb(el, n, emoji, style) {
   el.textContent = "";
   el.style.backgroundImage = `url("${makeArt(n.title, style, emoji)}")`;
