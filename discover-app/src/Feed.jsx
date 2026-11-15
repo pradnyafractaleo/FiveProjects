@@ -61,9 +61,11 @@ function NuggetDialog({ open, onClose }) {
 function usePullToRefresh() {
   const [pull, setPull] = useState(0);
   useEffect(() => {
-    let startY = null, dist = 0;
-    const down = e => { startY = window.scrollY <= 0 ? e.touches[0].clientY : null; dist = 0; };
-    const move = e => { if (startY === null) return; dist = Math.max(0, e.touches[0].clientY - startY); setPull(Math.min(dist, 110)); };
+    let startY = null, startX = 0, dist = 0;
+    const down = e => { startY = window.scrollY <= 0 ? e.touches[0].clientY : null; startX = e.touches[0].clientX; dist = 0; };
+    const move = e => { if (startY === null) return; dist = Math.max(0, e.touches[0].clientY - startY);
+      // ignore sideways swipes through the cards
+      if (Math.abs(e.touches[0].clientX - startX) > dist) { startY = null; dist = 0; setPull(0); return; } setPull(Math.min(dist, 110)); };
     const up = async () => {
       if (startY !== null && dist > 80) {
         setPull(-1);
@@ -94,11 +96,11 @@ export default function Feed() {
       )}
       <header>
         <h1>{cfg?.title || "NuggetBox"}</h1>
+        <a className="icon-btn" href="admin.html" aria-label="Admin settings" title="Admin">⚙️</a>
         <form className="search" onSubmit={e => { e.preventDefault(); setSearch(q.trim() || null); }}>
           <input type="search" value={q} onChange={e => setQ(e.target.value)} placeholder="Search anything… 🔍" />
           <button className="btn">Go</button>
         </form>
-        <a className="btn ghost" href="admin.html">⚙️ Admin</a>
       </header>
       <main>{cats.map((c, i) => <Row key={c.name + i} cat={c} idx={i} onOpen={(n, style, seed) => setOpen({ n, style, seed })} />)}</main>
       <footer className="note" style={{ textAlign: "center", padding: "0 16px 24px" }}>
