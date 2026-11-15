@@ -1,52 +1,88 @@
-export { ART_STYLES, makeArt };
 // Code-generated SVG card art. No image files or services: each card gets a unique
-// illustration from its title (seed) in its category's style.
-const ART_STYLES = { surprise: "Surprise me (mix)", blobs: "Blobs", confetti: "Confetti", waves: "Waves", garden: "Garden", stars: "Stars", stripes: "Stripes",
+// hand-drawn illustration from its title (seed) in its category's style.
+// Uses Rough.js (MIT, https://roughjs.com) for the sketchy look and
+// blobs (MIT, https://blobs.dev) for organic blob shapes. Both are bundled, nothing is fetched.
+import rough from "roughjs";
+import * as blobs2 from "blobs/v2";
+
+export const ART_STYLES = { surprise: "Surprise me (mix)", blobs: "Blobs", confetti: "Confetti", waves: "Waves", garden: "Garden", stars: "Stars", stripes: "Stripes",
   mountains: "Mountains", sunburst: "Sunburst", rainbow: "Rainbow", squiggles: "Squiggles", dots: "Polka dots", memphis: "Memphis shapes", bubbles: "Bubbles" };
+
 function seedRand(str) {
   let h = 1779033703; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 3432918353) >>> 0;
   return () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
-function makeArt(seed, style, emoji) {
+
+const gen = rough.generator();
+const FILLS = ["hachure", "solid", "zigzag", "cross-hatch", "solid"];
+const cache = new Map();
+
+export function makeArt(seed, style) {
+  const key = seed + "|" + style;
+  if (cache.has(key)) return cache.get(key);
   const R = seedRand(seed + style), r = (a, b) => a + R() * (b - a), pick = a => a[Math.floor(R() * a.length)];
-  // Solid background in a seed-picked hue; pattern colors are spread around the color wheel so they always stand out
-  const h = Math.floor(r(0,360)), hsl = (d, sat, l) => `hsl(${(h + d) % 360},${sat}%,${l}%)`;
-  const P = [hsl(r(40,80),85,72), hsl(r(150,210),75,55), hsl(r(230,280),90,80), hsl(r(290,330),70,45)].sort(() => R() - .5), W = 440, H = 260; let s = "";
+  const W = 440, H = 260; let s = "";
   if (style === "surprise") style = pick(Object.keys(ART_STYLES).slice(1));
-  const bg = `<rect width="${W}" height="${H}" fill="${hsl(0, Math.floor(r(65,90)), Math.floor(r(55,68)))}"/>`;
-  if (style === "blobs") for (let i = 0; i < 6; i++) s += `<circle cx="${r(0,W)}" cy="${r(0,H)}" r="${r(30,110)}" fill="${pick(P)}" opacity="${r(.35,.7)}"/>`;
-  if (style === "confetti") for (let i = 0; i < 40; i++) { const x = r(0,W), y = r(0,H), c = pick(P);
-    s += R() < .5 ? `<rect x="${x}" y="${y}" width="${r(6,16)}" height="${r(4,10)}" rx="2" fill="${c}" transform="rotate(${r(0,180)} ${x} ${y})"/>` : `<circle cx="${x}" cy="${y}" r="${r(3,8)}" fill="${c}"/>`; }
-  if (style === "waves") for (let i = 0; i < 5; i++) { const y = 40 + i * 50 + r(-10,10), a = r(15,35), k = r(60,120);
-    s += `<path d="M0 ${y} ${Array.from({length: 8}, (_, j) => `Q ${j*k + k/2} ${y + (j%2 ? a : -a)} ${(j+1)*k} ${y}`).join(" ")} V${H} H0Z" fill="${P[(i+2)%4]}" opacity=".45"/>`; }
-  if (style === "garden") { for (let i = 0; i < 9; i++) { const x = r(10,W-10), y = r(H*.45,H), h = r(40,110);
-      s += `<path d="M${x} ${H} Q${x + r(-20,20)} ${y} ${x} ${y - h}" stroke="#2d6a4f" stroke-width="4" fill="none"/>`;
-      const c = pick(P); for (let p = 0; p < 6; p++) s += `<ellipse cx="${x}" cy="${y-h-12}" rx="7" ry="14" fill="${c}" transform="rotate(${p*60} ${x} ${y-h})"/>`;
-      s += `<circle cx="${x}" cy="${y-h}" r="6" fill="#fff3b0"/>`; } }
-  if (style === "stars") for (let i = 0; i < 18; i++) { const x = r(0,W), y = r(0,H), o = r(5,16), n = o * .45;
-    const pts = Array.from({length: 10}, (_, j) => { const a = Math.PI/5*j - Math.PI/2, d = j%2 ? n : o; return `${x + d*Math.cos(a)},${y + d*Math.sin(a)}`; }).join(" ");
-    s += `<polygon points="${pts}" fill="${pick(P)}" opacity="${r(.6,1)}"/>`; }
-  if (style === "stripes") { const w = r(18,34), ang = r(-40,40);
-    s += `<g transform="rotate(${ang} ${W/2} ${H/2})">`; for (let x = -W; x < W*2; x += w*2) s += `<rect x="${x}" y="${-H}" width="${w}" height="${H*3}" fill="${pick(P)}" opacity=".5"/>`; s += `</g>`; }
-  if (style === "mountains") { for (let i = 0; i < 3; i++) s += `<circle cx="${r(40,W-40)}" cy="${r(30,80)}" r="${i ? 0 : r(22,36)}" fill="#fff3b0"/>`;
-    for (let i = 0; i < 4; i++) { let d = `M0 ${H}`; for (let x = 0; x <= W; x += r(50,110)) d += ` L${x} ${H*(.35 + i*.13) + r(-40,30)}`; s += `<path d="${d} L${W} ${H}Z" fill="${P[i%4]}" opacity="${.55 + i*.12}"/>`; } }
-  if (style === "sunburst") { const cx = r(0,W), cy = r(0,H), n = Math.floor(r(10,22));
-    for (let i = 0; i < n; i += 2) { const a1 = i/n*Math.PI*2, a2 = (i+1)/n*Math.PI*2;
-      s += `<path d="M${cx} ${cy} L${cx + 900*Math.cos(a1)} ${cy + 900*Math.sin(a1)} L${cx + 900*Math.cos(a2)} ${cy + 900*Math.sin(a2)}Z" fill="${pick(P)}" opacity=".45"/>`; }
-    s += `<circle cx="${cx}" cy="${cy}" r="${r(25,55)}" fill="${pick(P)}"/>`; }
-  if (style === "rainbow") { const cx = r(W*.2,W*.8), cy = H + r(0,40);
-    P.concat(P).forEach((c, i) => s += `<circle cx="${cx}" cy="${cy}" r="${220 - i*24}" fill="${c}"/>`); }
-  if (style === "squiggles") for (let i = 0; i < 9; i++) { let x = r(-20,W), y = r(0,H), d = `M${x} ${y}`;
-    for (let j = 0; j < 6; j++) d += ` q 15 ${j%2 ? 18 : -18} 30 0`;
-    s += `<path d="${d}" stroke="${pick(P)}" stroke-width="${r(4,9)}" fill="none" stroke-linecap="round" transform="rotate(${r(-30,30)} ${x} ${y})"/>`; }
-  if (style === "dots") { const g = r(26,44), rr = r(5,11);
-    for (let x = g/2; x < W; x += g) for (let y = g/2; y < H; y += g) s += `<circle cx="${x + (Math.round(y/g)%2 ? g/2 : 0)}" cy="${y}" r="${rr}" fill="${P[(Math.round(x/g)+Math.round(y/g))%4]}" opacity=".7"/>`; }
-  if (style === "memphis") for (let i = 0; i < 14; i++) { const x = r(0,W), y = r(0,H), c = pick(P), k = Math.floor(r(0,4)), z = r(14,34);
-    s += [`<polygon points="${x},${y-z} ${x+z},${y+z} ${x-z},${y+z}" fill="${c}"/>`, `<circle cx="${x}" cy="${y}" r="${z/1.5}" fill="none" stroke="${c}" stroke-width="6"/>`,
-      `<rect x="${x}" y="${y}" width="${z}" height="${z}" fill="${c}" transform="rotate(${r(0,90)} ${x} ${y})"/>`, `<path d="M${x} ${y} l${z} ${-z/2} l${z} ${z/2}" stroke="${c}" stroke-width="6" fill="none"/>`][k]; }
-  if (style === "bubbles") for (let i = 0; i < 16; i++) { const x = r(0,W), y = r(0,H), z = r(8,45);
-    s += `<circle cx="${x}" cy="${y}" r="${z}" fill="${pick(P)}" opacity=".35" stroke="#fff" stroke-width="2"/><circle cx="${x - z/3}" cy="${y - z/3}" r="${z/5}" fill="#fff" opacity=".7"/>`; }
-  // sprinkle a little sparkle on some cards for extra variety
-  if (R() < .4) for (let i = 0; i < 6; i++) { const x = r(0,W), y = r(0,H), z = r(4,9); s += `<path d="M${x} ${y-z} L${x+z/3} ${y-z/3} L${x+z} ${y} L${x+z/3} ${y+z/3} L${x} ${y+z} L${x-z/3} ${y+z/3} L${x-z} ${y} L${x-z/3} ${y-z/3}Z" fill="#fff" opacity=".85"/>`; }
-  return "data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${bg}${s}</svg>`);
+
+  // Solid background in a seed-picked hue; pattern colors are spread around the color wheel so they always stand out
+  const h = Math.floor(r(0, 360)), hsl = (d, sat, l) => `hsl(${(h + d) % 360},${sat}%,${l}%)`;
+  const P = [hsl(r(40, 80), 85, 72), hsl(r(150, 210), 75, 55), hsl(r(230, 280), 90, 80), hsl(r(290, 330), 70, 45)].sort(() => R() - .5);
+  const fillStyle = pick(FILLS), roughness = r(1, 2.4);
+
+  // Turn a Rough.js drawable into SVG path elements
+  const draw = (d, opacity = 1) => gen.toPaths(d).map(p =>
+    `<path d="${p.d}" stroke="${p.stroke}" stroke-width="${p.strokeWidth}" fill="${p.fill || "none"}" opacity="${opacity}" stroke-linecap="round"/>`).join("");
+  const o = (fill, extra = {}) => ({ seed: Math.floor(r(1, 1e6)), roughness, fill, fillStyle, fillWeight: 2, hachureGap: r(5, 9), hachureAngle: r(-60, 60), stroke: fill, strokeWidth: 2, ...extra });
+  const line = (c, w = 3) => ({ seed: Math.floor(r(1, 1e6)), roughness, stroke: c, strokeWidth: w });
+  // Organic blob from the blobs library, placed at x,y
+  const blob = (x, y, size, fill, opacity = 1) =>
+    `<path d="${blobs2.svgPath({ seed: Math.floor(r(1, 1e6)), extraPoints: Math.floor(r(2, 6)), randomness: Math.floor(r(4, 9)), size })}" transform="translate(${x - size / 2} ${y - size / 2})" fill="${fill}" opacity="${opacity}"/>`;
+
+  if (style === "blobs") for (let i = 0; i < 6; i++) s += blob(r(0, W), r(0, H), r(70, 200), pick(P), r(.55, .9));
+  if (style === "bubbles") for (let i = 0; i < 12; i++) { const x = r(0, W), y = r(0, H), z = r(16, 80);
+    s += blob(x, y, z, pick(P), .55) + draw(gen.circle(x - z / 6, y - z / 6, z / 4, o("#fff", { fillStyle: "solid", stroke: "#fff" }))); }
+  if (style === "confetti") for (let i = 0; i < 26; i++) { const x = r(0, W), y = r(0, H), c = pick(P);
+    s += R() < .5 ? draw(gen.rectangle(x, y, r(10, 22), r(6, 14), o(c, { fillStyle: "solid" }))) : draw(gen.circle(x, y, r(8, 16), o(c, { fillStyle: "solid" }))); }
+  if (style === "waves") for (let i = 0; i < 5; i++) { const y = 40 + i * 50 + r(-10, 10), a = r(15, 35), k = r(60, 120);
+    s += draw(gen.path(`M0 ${y} ${Array.from({ length: 8 }, (_, j) => `Q ${j * k + k / 2} ${y + (j % 2 ? a : -a)} ${(j + 1) * k} ${y}`).join(" ")} V${H} H0Z`, o(P[(i + 2) % 4])), .7); }
+  if (style === "garden") for (let i = 0; i < 8; i++) { const x = r(20, W - 20), hgt = r(70, 170), top = H - hgt, c = pick(P);
+    s += draw(gen.path(`M${x} ${H} Q${x + r(-25, 25)} ${H - hgt / 2} ${x} ${top}`, line("#2d6a4f", 4)));
+    s += blob(x + 14, H - hgt / 2, 26, "#52b788", .9);
+    for (let p = 0; p < 6; p++) { const a = p * Math.PI / 3; s += draw(gen.ellipse(x + 13 * Math.cos(a), top + 13 * Math.sin(a), 16, 24, o(c, { fillStyle: "solid" }))); }
+    s += draw(gen.circle(x, top, 12, o("#fff3b0", { fillStyle: "solid" }))); }
+  if (style === "stars") for (let i = 0; i < 12; i++) { const x = r(0, W), y = r(0, H), out = r(10, 24), inn = out * .45;
+    s += draw(gen.polygon(Array.from({ length: 10 }, (_, j) => { const a = Math.PI / 5 * j - Math.PI / 2, d = j % 2 ? inn : out; return [x + d * Math.cos(a), y + d * Math.sin(a)]; }), o(pick(P)))); }
+  if (style === "stripes") { const w = r(22, 38), ang = r(-40, 40); let g = "";
+    for (let x = -W / 2; x < W * 1.5; x += w * 2) g += draw(gen.rectangle(x, -H, w, H * 3, o(pick(P))), .75);
+    s += `<g transform="rotate(${ang} ${W / 2} ${H / 2})">${g}</g>`; }
+  if (style === "mountains") { s += draw(gen.circle(r(40, W - 40), r(35, 75), r(40, 70), o("#fff3b0", { fillStyle: "solid" })));
+    for (let i = 0; i < 3; i++) { const pts = [[0, H]]; for (let x = 0; x <= W; x += r(60, 120)) pts.push([x, H * (.4 + i * .15) + r(-40, 30)]); pts.push([W, H]);
+      s += draw(gen.polygon(pts, o(P[i % 4])), .9); } }
+  if (style === "sunburst") { const cx = r(0, W), cy = r(0, H), n = 2 * Math.floor(r(5, 11));
+    for (let i = 0; i < n; i += 2) { const a1 = i / n * Math.PI * 2, a2 = (i + 1) / n * Math.PI * 2;
+      s += draw(gen.polygon([[cx, cy], [cx + 600 * Math.cos(a1), cy + 600 * Math.sin(a1)], [cx + 600 * Math.cos(a2), cy + 600 * Math.sin(a2)]], o(pick(P))), .6); }
+    s += draw(gen.circle(cx, cy, r(50, 100), o(pick(P), { fillStyle: "solid" }))); }
+  if (style === "rainbow") { const cx = r(W * .2, W * .8), cy = H + r(0, 40);
+    P.concat(P).forEach((c, i) => s += draw(gen.arc(cx, cy, 440 - i * 46, 440 - i * 46, Math.PI, Math.PI * 2, true, o(c, { fillStyle: "solid" })))); }
+  if (style === "squiggles") for (let i = 0; i < 8; i++) { const x = r(-20, W), y = r(0, H); let d = `M${x} ${y}`;
+    for (let j = 0; j < 6; j++) d += ` q 15 ${j % 2 ? 18 : -18} 30 0`;
+    s += `<g transform="rotate(${r(-30, 30)} ${x} ${y})">${draw(gen.path(d, line(pick(P), r(4, 8))))}</g>`; }
+  if (style === "dots") { const gp = r(34, 50), rr = r(14, 22);
+    for (let x = gp / 2; x < W; x += gp) for (let y = gp / 2; y < H; y += gp)
+      s += draw(gen.circle(x + (Math.round(y / gp) % 2 ? gp / 2 : 0), y, rr, o(P[(Math.round(x / gp) + Math.round(y / gp)) % 4], { fillStyle: "solid", roughness: 1 })), .8); }
+  if (style === "memphis") for (let i = 0; i < 12; i++) { const x = r(0, W), y = r(0, H), c = pick(P), z = r(16, 34);
+    s += [draw(gen.polygon([[x, y - z], [x + z, y + z], [x - z, y + z]], o(c))),
+      draw(gen.circle(x, y, z * 1.4, { ...line(c, 5) })),
+      draw(gen.rectangle(x, y, z, z, o(c))),
+      draw(gen.linearPath([[x, y], [x + z, y - z / 2], [x + 2 * z, y], [x + 3 * z, y - z / 2]], line(c, 5))),
+      blob(x, y, z * 2, c)][Math.floor(r(0, 5))]; }
+
+  // A few hand-drawn sparkles on some cards for extra variety
+  if (R() < .4) for (let i = 0; i < 5; i++) { const x = r(0, W), y = r(0, H), z = r(5, 10);
+    s += draw(gen.linearPath([[x - z, y], [x + z, y]], line("#fff", 2))) + draw(gen.linearPath([[x, y - z], [x, y + z]], line("#fff", 2))); }
+
+  const bg = `<rect width="${W}" height="${H}" fill="${hsl(0, Math.floor(r(65, 90)), Math.floor(r(55, 68)))}"/>`;
+  const url = "data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${bg}${s}</svg>`);
+  cache.set(key, url);
+  return url;
 }
