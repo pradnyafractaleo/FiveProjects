@@ -2,21 +2,17 @@
 // illustration from its title (seed) in its category's style.
 const ART_STYLES = { surprise: "Surprise me (mix)", blobs: "Blobs", confetti: "Confetti", waves: "Waves", garden: "Garden", stars: "Stars", stripes: "Stripes",
   mountains: "Mountains", sunburst: "Sunburst", rainbow: "Rainbow", squiggles: "Squiggles", dots: "Polka dots", memphis: "Memphis shapes", bubbles: "Bubbles" };
-const PALETTES = [
-  ["#ff6b9d","#ffb347","#ffe66d","#4ecdc4"], ["#7b6cff","#4ecdc4","#a8e6cf","#ffd3b6"],
-  ["#ff8a5c","#ffd166","#06d6a0","#118ab2"], ["#f78fb3","#c3aed6","#8fd3fe","#fff3b0"],
-  ["#2ec4b6","#cbf3f0","#ffbf69","#ff9f1c"], ["#9b5de5","#f15bb5","#fee440","#00bbf9"],
-  ["#ef476f","#ffd166","#06d6a0","#073b4c"], ["#264653","#2a9d8f","#e9c46a","#f4a261"], ["#ffadad","#ffd6a5","#caffbf","#9bf6ff"],
-  ["#3a0ca3","#7209b7","#f72585","#4cc9f0"], ["#fb5607","#ff006e","#8338ec","#3a86ff"], ["#606c38","#dda15e","#fefae0","#bc6c25"]];
 function seedRand(str) {
   let h = 1779033703; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 3432918353) >>> 0;
   return () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
 function makeArt(seed, style, emoji) {
   const R = seedRand(seed + style), r = (a, b) => a + R() * (b - a), pick = a => a[Math.floor(R() * a.length)];
-  const P = [...pick(PALETTES)].sort(() => R() - .5), W = 440, H = 260; let s = "";
+  // Solid background in a seed-picked hue; pattern colors are spread around the color wheel so they always stand out
+  const h = Math.floor(r(0,360)), hsl = (d, sat, l) => `hsl(${(h + d) % 360},${sat}%,${l}%)`;
+  const P = [hsl(r(40,80),85,72), hsl(r(150,210),75,55), hsl(r(230,280),90,80), hsl(r(290,330),70,45)].sort(() => R() - .5), W = 440, H = 260; let s = "";
   if (style === "surprise") style = pick(Object.keys(ART_STYLES).slice(1));
-  const bg = `<defs><linearGradient id="g" x1="${r(0,1)}" y1="0" x2="${r(0,1)}" y2="1"><stop offset="0" stop-color="${P[0]}"/><stop offset="1" stop-color="${P[1]}"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#g)"/>`;
+  const bg = `<rect width="${W}" height="${H}" fill="${hsl(0, Math.floor(r(65,90)), Math.floor(r(55,68)))}"/>`;
   if (style === "blobs") for (let i = 0; i < 6; i++) s += `<circle cx="${r(0,W)}" cy="${r(0,H)}" r="${r(30,110)}" fill="${pick(P)}" opacity="${r(.35,.7)}"/>`;
   if (style === "confetti") for (let i = 0; i < 40; i++) { const x = r(0,W), y = r(0,H), c = pick(P);
     s += R() < .5 ? `<rect x="${x}" y="${y}" width="${r(6,16)}" height="${r(4,10)}" rx="2" fill="${c}" transform="rotate(${r(0,180)} ${x} ${y})"/>` : `<circle cx="${x}" cy="${y}" r="${r(3,8)}" fill="${c}"/>`; }

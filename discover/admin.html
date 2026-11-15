@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Nugget Admin</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3">
 </head><body>
 <header><h1>⚙️ Admin</h1><a class="btn ghost" href="index.html">← Back to feed</a></header>
 <div class="panel" id="login">
@@ -27,8 +27,8 @@
   <div class="actions" style="margin-top:8px"><button class="btn danger" id="publish">🚀 Publish to all devices</button></div>
   <p class="note" id="status"></p>
 </div>
-<script src="sources.js"></script>
-<script src="art.js"></script>
+<script src="sources.js?v=3"></script>
+<script src="art.js?v=3"></script>
 <script>
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2,"0")).join("");
 const ls = { get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } }, set: (k,v) => { try { localStorage.setItem(k,v); } catch {} } };
