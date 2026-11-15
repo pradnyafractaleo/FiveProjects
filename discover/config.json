@@ -6,30 +6,24 @@
       "name": "Life",
       "emoji": "🌈",
       "query": "happiness habits",
-      "tag": "productivity",
       "sources": [
-        "wikipedia",
-        "devto"
+        "wikipedia"
       ]
     },
     {
       "name": "Gardening",
       "emoji": "🌻",
       "query": "gardening",
-      "tag": "",
       "sources": [
-        "wikipedia",
-        "hn"
+        "wikipedia"
       ]
     },
     {
       "name": "Tech",
       "emoji": "🚀",
       "query": "technology",
-      "tag": "webdev",
       "sources": [
-        "hn",
-        "devto"
+        "wikipedia"
       ]
     }
   ]

@@ -38,7 +38,7 @@ async function addRow(c, idx) {
   sec.innerHTML = `<h2>${esc(c.emoji)} ${esc(c.name)}</h2><div class="cards"><p class="empty">Finding nuggets…</p></div>`;
   rows.appendChild(sec);
   const box = sec.querySelector(".cards"), items = await fetchCategory(c);
-  box.innerHTML = items.length ? "" : `<p class="empty">Nothing found right now. Try other sources in Admin.</p>`;
+  box.innerHTML = items.length ? "" : `<p class="empty">Nothing found right now. Try different search words in Admin.</p>`;
   items.forEach((n, i) => {
     const card = document.createElement("div"); card.className = "card";
     card.innerHTML = `<div class="thumb"></div><div class="body"><h3>${esc(n.title)}</h3>
@@ -57,7 +57,7 @@ let cfg;
 })();
 searchForm.onsubmit = e => {
   e.preventDefault(); const q = document.getElementById("q").value.trim(); if (!q) return;
-  rows.innerHTML = ""; addRow({ name: `Results for “${q}”`, emoji: "🔎", query: q, tag: q, sources: ["wikipedia","hn","devto"] }, 0);
+  rows.innerHTML = ""; addRow({ name: `Results for “${q}”`, emoji: "🔎", query: q, sources: ["wikipedia"] }, 0);
   cfg.categories.forEach((c, i) => addRow(c, i + 1));
 };
 </script>

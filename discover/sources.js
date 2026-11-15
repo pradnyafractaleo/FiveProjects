@@ -1,4 +1,4 @@
-// Free, keyless sources. Each returns [{title,image,summary,url,source}]
+// Free, keyless sources (Wikipedia only for now). Each returns [{title,image,summary,url,source}]
 const strip = s => (s || "").replace(/<[^>]+>/g, "").replace(/&[a-z#0-9]+;/gi, " ").trim();
 const get = async u => { const r = await fetch(u); if (!r.ok) throw new Error(r.status); return r.json(); };
 
@@ -8,17 +8,8 @@ const SOURCES = {
     const d = await get(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${q}&gsrlimit=8&prop=pageimages|extracts|info&exintro=1&explaintext=1&exsentences=5&piprop=thumbnail&pithumbsize=500&inprop=url&format=json&origin=*`);
     return Object.values(d.query?.pages || {}).map(p => ({ title: p.title, image: p.thumbnail?.source, summary: p.extract, url: p.fullurl, source: "Wikipedia", license: ["CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0/"] }));
   },
-  devto: async (c) => {
-    const tag = (c.tag || c.name).toLowerCase().replace(/[^a-z0-9]/g, "");
-    const d = await get(`https://dev.to/api/articles?tag=${tag}&top=7&per_page=8`);
-    return d.map(a => ({ title: a.title, image: a.cover_image || a.social_image, summary: a.description, url: a.url, source: "Dev.to", author: a.user?.name }));
-  },
-  hn: async (c) => {
-    const d = await get(`https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(c.query || c.name)}&tags=story&hitsPerPage=8`);
-    return d.hits.filter(h => h.url || h.story_text).map(h => ({ title: h.title, image: "", author: h.author, summary: `${h.points} points · ${h.num_comments} comments on Hacker News`, url: h.url || `https://news.ycombinator.com/item?id=${h.objectID}`, source: "Hacker News" }));
-  },
 };
-const SOURCE_NAMES = { wikipedia: "Wikipedia", devto: "Dev.to", hn: "Hacker News" };
+const SOURCE_NAMES = { wikipedia: "Wikipedia" };
 
 async function fetchCategory(c) {
   const lists = await Promise.allSettled((c.sources || Object.keys(SOURCES)).map(s => SOURCES[s] ? SOURCES[s](c) : []));
