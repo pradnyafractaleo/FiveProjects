@@ -9,7 +9,7 @@ export default function About() {
         <h2>Images</h2>
         <p>Card art is drawn by the site's own code. No outside images or image services are used.</p>
         <h2>Privacy</h2>
-        <p>This site has no accounts, cookies, ads or analytics. Your browser loads content directly from Wikipedia, which sees your IP address. The Caveat font (SIL Open Font License) is built into the app. Admin settings are kept only in your own browser.</p>
+        <p>This site has no accounts, cookies, ads or analytics. Your browser loads content directly from Wikipedia, which sees your IP address. The Patrick Hand font (SIL Open Font License) is built into the app. Admin settings are kept only in your own browser.</p>
         <h2>Removal requests</h2>
         <p>If you'd like something taken down, please open an issue on <a href="https://github.com/pradnyafractaleo/FiveProjects/issues">GitHub</a>.</p>
       </div>
