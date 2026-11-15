@@ -37,18 +37,18 @@ function Row({ cat, idx, onOpen }) {
 
 function NuggetDialog({ open, onClose }) {
   const ref = useRef();
-  useEffect(() => { open ? ref.current.showModal() : ref.current.open && ref.current.close(); }, [open]);
+  useEffect(() => { if (open) { ref.current.showModal(); ref.current.focus(); } else if (ref.current.open) ref.current.close(); }, [open]);
   const n = open?.n;
   return (
-    <dialog ref={ref} onClose={onClose}>
+    <dialog ref={ref} tabIndex={-1} onClose={onClose} onClick={e => e.target === ref.current && onClose()}>
       {n && <>
         <Art n={n} style={open.style} seed={open.seed} />
         <div className="inner">
           <h3>{n.title}</h3>
           <p>{n.summary || "No summary available. Tap Visit site to read more."}</p>
-          <small className="note credit">Text: {n.source} · <a href={n.license[1]} target="_blank" rel="noopener">{n.license[0]}</a> · Art by NuggetBox</small>
+          <small className="note credit">Text: {n.source} · <a href={n.license[1]} target="_blank" rel="noopener">{n.license[0]}</a></small>
           <div className="actions">
-            <button className="btn ghost" autoFocus onClick={onClose}>Close</button>
+            <button className="btn ghost" onClick={onClose}>Close</button>
             <a className="btn" href={n.url} target="_blank" rel="noopener">Visit site ↗</a>
           </div>
         </div>

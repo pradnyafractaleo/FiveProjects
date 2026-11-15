@@ -54,3 +54,5 @@ header .search{order:3;flex-basis:100%;max-width:none}
   .card h3{font-size:18px}
 }
 dialog .credit{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:10px}
+dialog:focus{outline:none}
+dialog :focus:not(:focus-visible){outline:none}
