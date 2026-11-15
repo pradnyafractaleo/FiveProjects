@@ -13,7 +13,7 @@ input,select,button,textarea{font:inherit}
 main{max-width:1200px;margin:auto;padding:0 0 40px}
 .row{margin:18px 0}
 .row h2{margin:0 16px 8px;font-size:22px}
-.cards{display:flex;gap:14px;overflow-x:auto;padding:6px 16px 14px;scroll-snap-type:x mandatory}
+.cards{display:flex;gap:14px;overflow-x:auto;padding:6px 16px 14px;scroll-snap-type:x mandatory;scroll-padding-inline:16px}
 .card{flex:0 0 220px;scroll-snap-align:start;background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 4px 14px rgba(60,30,90,.12);cursor:pointer;transition:transform .15s;display:flex;flex-direction:column}
 .card:hover{transform:translateY(-4px) rotate(-.5deg)}
 .thumb{height:130px;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:48px}
