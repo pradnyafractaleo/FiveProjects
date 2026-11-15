@@ -22,15 +22,14 @@ function Row({ cat, idx, onOpen }) {
     return () => { live = false; };
   }, [cat]);
   const style = styleOf(cat, idx);
+  // The whole section (title and cards) appears together once its cards are ready
+  if (!items) return null;
   return (
     <section className="row">
       <h2>{cat.emoji} {cat.name}</h2>
       <div className="cards">
-        {!items && [0, 1, 2].map(i => (
-          <div className="card skeleton" key={i} aria-hidden="true"><div className="thumb" /><div className="body"><span /><span /></div></div>
-        ))}
-        {items && !items.length && <p className="empty">Nothing found right now. Try different search words in Admin.</p>}
-        {items?.map(n => (
+        {!items.length && <p className="empty">Nothing found right now. Try different search words in Admin.</p>}
+        {items.map(n => (
           <div className="card" key={n.url} onClick={() => onOpen(n, style, cat.name)}>
             <Art n={n} style={style} seed={cat.name} />
             <div className="body">

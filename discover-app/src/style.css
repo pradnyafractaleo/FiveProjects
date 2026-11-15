@@ -56,7 +56,7 @@ header .search{order:3;flex-basis:100%;max-width:none}
 dialog .credit{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:10px}
 dialog:focus{outline:none}
 dialog :focus:not(:focus-visible){outline:none}
-.skeleton{cursor:default;pointer-events:none}
-.skeleton .thumb,.skeleton span{background:linear-gradient(90deg,var(--line) 25%,var(--card) 50%,var(--line) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite}
-.skeleton span{display:block;height:14px;border-radius:7px;width:80%}.skeleton span+span{width:40%}
-@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+main:not(:has(.row))::before{content:"✨ Finding nuggets…";display:block;text-align:center;padding:60px 16px;color:var(--title);font-weight:700;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.4}}
+.row{animation:fadein .35s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}}
